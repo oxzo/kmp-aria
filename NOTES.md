@@ -264,10 +264,10 @@ the distribution. The three test tasks came back UP-TO-DATE. With `--rerun` afte
 byte-identical to the committed file apart from the recorded timestamps. Link, ProgressBar and
 Disclosure: 19 UI tests green on the first JVM run (11:54) and the first wasmJs run (11:56),
 first browser run 11:57, mutations red on JVM, wasmJs and browser at 12:02, final run after.
-Three components in about 75 minutes from the honest gate, none of it on the Compose side:
-no test needed a second attempt.
+Three components in about twenty minutes of wall clock from the honest gate to the commit
+(11:48 to 12:07), none of it on the Compose side: no test needed a second attempt.
 
-What fought back was the report, three times:
+What fought back was the report, three times, and the harness once more after the rows:
 
 - **Playwright quotes a string that contains a colon** (`paragraph: "Value: 30"`). The parser
   kept the quote characters, so the demo's state line came out as `text ""Value: 30""` missing on
@@ -284,7 +284,16 @@ What fought back was the report, three times:
 
 One addition: a link's destination arrives in the snapshot as a property line (`- /url: …`)
 under the widget. It is parsed as an `href` attribute of that widget and attributed with its own
-wording, since "mirror writes no aria-href" would have been nonsense.
+wording, since "mirror writes no aria-href" would have been nonsense. It is the only reason
+`href` appears in the Link row at all: the instrument was extended to produce it.
+
+And one harness bug found after the rows were recorded, by the bias scan of the vault note:
+**the mirror-DOM serializer dropped text nodes beside element children.** It recursed over
+`children` when an element had any, so a node whose `innerText` held a newline (rendered as
+text, `<br>`, text) was captured as `<br></br>` with no text; the ProgressBar `pb` node shows
+it. Fixed to walk `childNodes`; ProgressBar re-recorded; no row changed, since attribution
+keys on attributes and `aria-label`, but the mirror-name check (`>name<`) would have missed a
+name carried as text on such a node.
 
 ### What the browser received (attribution, metric 8)
 
@@ -295,8 +304,8 @@ Every row is from `conformance/report.js`; this is the mechanism per missing ite
   clickable node is a `button` whatever it is. `jb-main` adds `Link = 12`, but only for a node
   carrying `LinkTestMarker`, which `TextLinkScope` sets on the child box of a `LinkAnnotation`
   inside text (`foundation/text/TextLinkScope.kt`, the `LinksComposables` box), never on a
-  standalone clickable. So this row does not flip on the next release either; it would need the
-  port to become a text annotation. `href`: the reference exposes the URL on "Docs"; mirror
+  standalone clickable. So the release that ships today's `jb-main` does not flip this row; it
+  would need the port to become a text annotation. `href`: the reference exposes the URL on "Docs"; mirror
   nodes are `div`s. `disabled` as Button, version-bound. **Framework**, all five.
   The framework's own link path (`#/fw-link`, `LinkAnnotation.Clickable` in `BasicText`, the
   control column since Material3 has no link): 1.12.0 emits the link's child box as a
@@ -322,8 +331,9 @@ Every row is from `conformance/report.js`; this is the mechanism per missing ite
   A second layer: Playwright's `ariaSnapshot` renders no `aria-valuenow` for any role (the
   injected script reads it only to compute a value string), so a mirror that did write it would
   show up in the mirror-DOM check, not in the snapshot.
-- **Disclosure: `level`, `expanded`, `group`.** The heading crosses (`Heading` is read: the
-  first non-button widget role this ladder has seen arrive) and so does the button; `level` is
+- **Disclosure: `level`, `expanded`, `group`.** The heading crosses (`Heading` is read off a
+  property, as `EditableText` was for the textbox row; the first structural role to arrive)
+  and so does the button; `level` is
   missing because Compose semantics has no heading level at all, a vocabulary gap ahead of the
   mirror; `expanded` is missing because the `Expand` / `Collapse` actions are not read (no
   `aria-expanded` in 1.12.0 or on `jb-main`); the panel's `group "System Requirements"` is
@@ -337,8 +347,8 @@ Every row is from `conformance/report.js`; this is the mechanism per missing ite
   (lines 262–264 of the shipped listener). The bullets session 2 saw are explained by that:
   `EditableText` carries the visually transformed string, so `PasswordVisualTransformation`
   masked the mirror node by accident of the transformation while the backing `<input>` held the
-  plain text. A field marked `password()` without a transformation leaks as the issue says.
-  Neither NOTES nor the vault note needed correcting.
+  plain text. A field marked `password()` without a transformation leaks as the issue says;
+  that case was not exercised here. Neither NOTES nor the vault note needed correcting.
 
 ### Mutation checks (seen red before any row counted)
 
@@ -411,6 +421,7 @@ heading. Everything that is a `Role` or a state is a button without state, a lin
 progress value, not for expanded. ProgressBar is the first row the browser instrument cannot see
 the port on at all, which makes it the clearest statement of the ceiling: a progress bar built
 in Compose for Web is, to Chromium's accessibility tree, a paragraph. Disclosure is the first
-row where a role mutation went red, because heading is one of the two property-derived roles.
-Three components cost the same again, about an hour, and again almost none of it in Kotlin.
-The Orca pass is still owed.
+row where a role mutation went red, because heading is derived from a property, not from
+`Role` (as textbox, list and grid are). Three components cost twenty minutes of wall clock from
+the honest gate to the commit, and again almost none of it in Kotlin. The Orca pass is still
+owed.

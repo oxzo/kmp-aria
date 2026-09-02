@@ -154,7 +154,7 @@ port at all (below).
   `LinearProgressIndicator` is an empty `div`. Since the reference's value text sits inside
   its widget and the port has no widget, no port mutation can reach the diff; the semantics
   instrument is that row's only guard.
-- Disclosure's heading crosses (the first property-derived role to arrive) without a level,
+- Disclosure's heading crosses (read off a property, as the textbox was) without a level,
   the trigger crosses without `expanded`, and the panel's `group` has no Compose role. Its
   heading mutation is the first role mutation this project has seen red on the browser
   instrument.

@@ -100,14 +100,22 @@ export async function mirrorHtml(page: Page, target: Target): Promise<string | u
   return await page.evaluate((root) => {
     const container = document.querySelector(root)
     if (!container) return '<!-- no root -->'
-    const serialize = (node: ParentNode): string => {
+    // Walks childNodes, not children: a mirror node whose innerText held a newline renders
+    // as text + <br> + text, and a children-only walk dropped both text nodes (found after
+    // the session-3 rows were recorded; no row depended on it, attribution keys on attributes).
+    const serialize = (node: Node): string => {
       let html = ''
-      for (const child of Array.from(node.children)) {
+      for (const child of Array.from(node.childNodes)) {
+        if (child.nodeType === Node.TEXT_NODE) {
+          html += child.textContent ?? ''
+          continue
+        }
+        if (!(child instanceof Element)) continue
         if (child.tagName === 'CANVAS' || child.tagName === 'STYLE') continue
         const attrs = Array.from(child.attributes).map((a) => ` ${a.name}="${a.value}"`).join('')
         html += `<${child.tagName.toLowerCase()}${attrs}>`
         if (child.shadowRoot) html += '<!--shadow-->' + serialize(child.shadowRoot)
-        html += child.children.length ? serialize(child) : (child.textContent ?? '')
+        html += serialize(child)
         html += `</${child.tagName.toLowerCase()}>\n`
       }
       return html

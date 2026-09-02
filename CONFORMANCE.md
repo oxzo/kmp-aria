@@ -1456,7 +1456,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### ProgressBar
 
-Reference: https://react-aria.adobe.com/ProgressBar · route `#/progress-bar` · M3 control `#/m3-progress-bar` · recorded 2026-09-02T09:05:20.008Z
+Reference: https://react-aria.adobe.com/ProgressBar · route `#/progress-bar` · M3 control `#/m3-progress-bar` · recorded 2026-09-02T09:17:21.407Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
