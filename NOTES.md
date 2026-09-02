@@ -407,8 +407,9 @@ CheckboxGroup (9) went first-try green on the JVM and on wasmJs; SearchField (10
 compile fixes before its first run (a lambda whose last expression was `onClear?.invoke()` had
 type `() -> Unit?`; `assertExists` and `assertDoesNotExist` are members, not imports), then went
 green on both. Neither the harness nor the report changed this session; no spec helper was
-touched. From the gate's tests (15:38) to the final gate (16:10:43) is thirty-two minutes of wall
-clock, three of them Kotlin fixes; the commit time closes the session.
+touched. From the gate's tests (15:38:15) to the final gate (16:10:43) is thirty-two minutes of wall
+clock; the two compile fixes sit between the CheckboxGroup recording's end (16:03:36) and the
+passing JVM run (16:05:17), under two minutes. The commit (c06f269, 16:17:18) closes the session.
 
 What fought back was Gradle, once more, and the build cache once:
 
