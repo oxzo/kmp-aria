@@ -11,14 +11,18 @@ import {
   CheckboxGroup,
   Disclosure,
   DisclosurePanel,
+  Group,
   Heading,
   Input,
   Label,
   Link,
+  Meter,
+  NumberField,
   ProgressBar,
   Radio,
   RadioGroup,
   SearchField,
+  Separator,
   Switch,
   TextField,
   ToggleButton,
@@ -36,8 +40,11 @@ const routes = [
   '/radio-group',
   '/text-field',
   '/search-field',
+  '/number-field',
   '/link',
   '/progress-bar',
+  '/meter',
+  '/separator',
   '/disclosure',
 ]
 
@@ -239,6 +246,28 @@ function SearchFieldDemo() {
   )
 }
 
+/** Quantity 0–10, step 1, starting at 5; onChange reports NaN for an empty field. */
+function NumberFieldDemo() {
+  const [value, setValue] = useState(5)
+  return (
+    <>
+      <NumberField value={value} onChange={setValue} minValue={0} maxValue={10}>
+        <Label>Quantity</Label>
+        <Group data-testid="group">
+          <Button slot="decrement" data-testid="dec">
+            -
+          </Button>
+          <Input data-testid="nf" />
+          <Button slot="increment" data-testid="inc">
+            +
+          </Button>
+        </Group>
+      </NumberField>
+      <p data-testid="state">Value: {Number.isNaN(value) ? 'none' : value}</p>
+    </>
+  )
+}
+
 function LinkDemo() {
   const [count, setCount] = useState(0)
   return (
@@ -289,6 +318,44 @@ function ProgressBarDemo() {
   )
 }
 
+function MeterDemo() {
+  const [value, setValue] = useState(25)
+  return (
+    <>
+      <Meter data-testid="meter" value={value}>
+        {({ percentage, valueText }) => (
+          <>
+            <Label>Storage space</Label> <span className="value">{valueText}</span>
+            <div style={track}>
+              <div style={{ width: `${percentage}%`, height: '100%', background: 'black' }} />
+            </div>
+          </>
+        )}
+      </Meter>
+      <Button data-testid="fill" onPress={() => setValue((v) => Math.min(100, v + 25))}>
+        Fill
+      </Button>
+      <p data-testid="state">Value: {value}</p>
+    </>
+  )
+}
+
+/** A horizontal separator between two paragraphs and a vertical one between two words. */
+function SeparatorDemo() {
+  return (
+    <>
+      <p>Above</p>
+      <Separator data-testid="sep" />
+      <p>Below</p>
+      <div style={{ display: 'flex', gap: 8, height: 24, alignItems: 'center' }}>
+        <p>Left</p>
+        <Separator data-testid="sep-v" orientation="vertical" style={{ width: 1, alignSelf: 'stretch', background: 'black' }} />
+        <p>Right</p>
+      </div>
+    </>
+  )
+}
+
 function DisclosureDemo() {
   const [open, setOpen] = useState(false)
   return (
@@ -329,10 +396,16 @@ function App() {
       return <TextFieldDemo />
     case '/search-field':
       return <SearchFieldDemo />
+    case '/number-field':
+      return <NumberFieldDemo />
     case '/link':
       return <LinkDemo />
     case '/progress-bar':
       return <ProgressBarDemo />
+    case '/meter':
+      return <MeterDemo />
+    case '/separator':
+      return <SeparatorDemo />
     case '/disclosure':
       return <DisclosureDemo />
     default:

@@ -579,6 +579,198 @@ wasmJs and browser before the rows were generated.
 - LOC (`.logs/metric7-loc-s4.txt`): main Kotlin 1872 (was 1211), commonMain 1849 (99 % shared);
   `aria` 1119 main and 1292 test; `stately` 112 and 116; conformance 1370 lines of TS/JS.
 
+## Session 5 — 2026-09-02
+
+### Blind spots declared before the rows (the session-3 exception, applied twice)
+
+Written before `meter.spec.ts` and `separator.spec.ts` were run for the first time, as the row
+rule requires (NOTES "Session 3": a row whose port the browser instrument cannot see counts on the
+semantics instrument, with the blindness written here first).
+
+- **Meter.** The reference's `Meter` renders its label ("Storage space") and value text ("25%")
+  inside the `role="meter progressbar"` element, so both are the widget's own texts, not free
+  text; the port has `progressSemantics`, which the 1.12.0 listener does not read (session 3,
+  ProgressBar), so it has no widget role and the browser sees a paragraph. The report diffs
+  widgets by role and name and free texts by string: the meter widget is missing at every step
+  whatever the port does, and no port mutation to the value, the clamping or the formatting can
+  change the browser diff. The same blindness as ProgressBar, for the same reason. The behaviour
+  mutation for this row (clamping removed) is therefore expected red on the semantics instrument
+  only, and the "Fill" state line, which is the demo's and not the meter's, is expected to stay
+  green under it.
+- **Separator.** The reference exposes two `separator` widgets with no name and no text; the
+  surrounding "Above", "Below", "Left", "Right" are outside them and the port renders those as
+  plain text, unchanged by anything the separator does. Compose has no separator role, so the
+  port's line has no widget role; the browser diff will show `separator (unnamed)` missing at
+  `load` and nothing else, and no port mutation (orientation ignored, thickness ignored) can
+  reach it. The behaviour mutation for this row (orientation ignored) is expected red on the
+  semantics instrument only.
+- **NumberField is not blind.** Its state line is outside the group and the reference's step
+  buttons are named widgets outside the input, so a behaviour mutation (ArrowUp stepping the
+  wrong way) is expected red on the browser instrument at the `up` step and on the semantics
+  instrument.
+
+### The build
+
+The gate with `--rerun` after every leaf test task executed the 87 UI tests and the eleven stately
+tests in 4 s (`.logs/63-gate-s5.log`, 16:55:45 → 16:55:50; XML timestamps 13:55:46Z–13:55:48Z), and
+the Playwright gate (37 targets, 16:58:40 → 17:03:53, `.logs/64-gate-playwright-s5.log`) reproduced
+the twelve committed rows with zero non-timestamp diff lines. Three components, twenty-seven new
+UI tests and eight state tests: NumberField (17 + 8), Meter (6) and Separator (4) went first-try
+green on the JVM (`.logs/65-s5-jvm.log`, 17:08:57 → 17:09:04; XML 14:08:58Z and 14:09:01Z–14:09:03Z)
+and, after the cache incident below, on wasmJs (`.logs/66b-s5-wasm-and-dist-after-ic-clear.log`,
+17:10:49 → 17:11:24; XML 14:10:53Z, stately 14:10:56Z). One harness change: `report.js` keys a
+nameless reference widget as `role (unnamed)` and attributes it by role alone, instead of matching
+it by its null name to any nameless target widget (which would have let Compose's nameless backing
+textbox stand in for the reference's unnamed `group`); the regenerated report showed zero change to
+the twelve rows before the new specs ran. From the gate's end (16:55:50) to the end of the final
+Playwright run (17:36:56) is forty-one minutes of wall clock, of which the dropped-keystroke
+investigation (17:13 → 17:28, logs 68–76) is about fifteen.
+
+What fought back:
+
+- **The Kotlin/Wasm incremental cache.** The first wasm run after the new `stately` source file
+  failed in the link of the stately test executable: `:stately:compileTestDevelopmentExecutableKotlinWasmJs`
+  threw `NoSuchElementException: Key ic#69:kotlin.text/split|split@kotlin.CharSequence(kotlin.CharArray...;kotlin.Boolean;kotlin.Int){}[0]-0 is missing in the map`
+  from `WasmIrToBinary` (`.logs/66-s5-wasm-and-dist.log`, 17:09:34 → 17:09:52, BUILD FAILED in
+  17 s). Deleting `stately/build/klib/cache` (the `wasm-js` incremental cache) and rerunning the
+  same command went green in 34 s. No source was touched between the two runs; beyond "an
+  incremental-cache entry the linker expected was missing after a new file", the cause was not
+  established.
+- **The dropped keystroke** (its own section below): fifteen minutes of measuring before the
+  port bug under it was found.
+
+### What the browser received (attribution, metric 8)
+
+- **NumberField: `group (unnamed)` at every step, `disabled` at `home` and `end`; nothing else.**
+  The reference exposes a plain `textbox "Quantity"`, not a spinbutton: `useNumberField` takes the
+  spinbutton role and the four value attributes from `useSpinButton` (`useSpinButton.mjs` lines
+  183–184) and then nulls them on the input (`useNumberField.mjs` lines 218–223, "override the
+  spinbutton role, we can't focus a spin button with VO"), describing the role as "Number field"
+  through `aria-roledescription` (line 220), which Playwright's snapshot does not render. The
+  session-4 handoff predicted `role spinbutton→textbox` and invisible value attributes; the grep
+  before writing corrected that, and the row shows what the source says. The two step buttons are
+  `button "Decrease Quantity"` / `button "Increase Quantity"` on both sides (the reference's
+  `aria-label` from its `increase` / `decrease` strings, the port's `contentDescription`), both
+  outside the tab order (reference `excludeFromTabOrder`, lines 262 and 276; port
+  `canFocus = false`): one Tab on the reference and two on Compose reached the input. The wrapper
+  is `role="group"` with no name (line 285); Compose has no group role (session 4), and the
+  Material3 control (a `TextField` with `KeyboardType.Number` between two `IconButton`s in a
+  `Row`) arrives as a nameless `textbox` between `button "-"` and `button "+"` with no group, so
+  **framework**. `disabled` on a step button at its bound (Decrease at 0 after Home, Increase at
+  10 after End) is the Button row's `disabled` again: not written by the mirror, absent on the M3
+  `IconButton`s too, **framework**. Behaviour matched at every step: ArrowUp 6, ArrowDown 5, Home
+  0, End 10, the pointer press on Decrease 9 with focus staying on the input, select-all and "7"
+  showing 7 in the field with 9 still committed, Enter committing 7. The backing `<input>` shows
+  as the nameless second textbox holding the value, as on the TextField and SearchField rows.
+- **`inputmode="number"`.** The port asks for `KeyboardType.Number`, the nearest Compose
+  expression of the reference's `inputMode="numeric"`. On the web target that becomes
+  `inputmode="number"` on the backing `<input>` (`DomInputStrategy.kt` lines 184–195 map the
+  keyboard type and line 209 sets the attribute; the recorded mirror DOM shows
+  `<input autocorrect="on" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="number" enterkeyhint="enter" class="compose-backing-field">`).
+  `number` is not one of the eight `inputmode` keywords (`none`, `text`, `decimal`, `numeric`,
+  `tel`, `search`, `email`, `url`; MDN's `inputmode` page, fetched 2026-09-02), so on a device
+  with a soft keyboard the numeric hint is lost; the same table maps `KeyboardType.Password` to
+  `"password"`, also not a keyword (not measured here). This is not the `type="number"` element
+  the session-5 draft first assumed: the backing input has no `type` attribute, it is a textbox,
+  and no spinbutton appears on the Compose side.
+- **Meter: `meter "Storage space"` at every step.** Playwright resolves the reference's
+  `role="meter progressbar"` (`useMeter.mjs` line 24; the second token is the fallback for
+  browsers without the meter role) to `meter`; Compose has no vocabulary for either (session 3,
+  ProgressBar), so the port is `text: Storage space 25%` and the Material3
+  `LinearProgressIndicator` an empty element, **framework**. The Fill button moved the value
+  25 → 50 → 75 on all three targets. Blind spot as declared above; the mutation was seen red on
+  the semantics instrument only.
+- **Separator: `separator (unnamed)` at `load`.** The reference exposes two separators, the
+  `<hr>` and the vertical `div role="separator"` (`useSeparator.mjs` lines 23–26;
+  `Separator.mjs` lines 44–45), collapsed into one row key because the report keys by role and
+  name; `aria-orientation` is not in the snapshot on either side. Compose renders
+  `text: Above Below Left Right`: the lines produce no node at all, and Material3's
+  `HorizontalDivider` / `VerticalDivider` (a `Canvas` with no semantics, `Divider.kt`) produce
+  none either, so **framework**. Blind spot as declared; mutation red on the semantics instrument
+  only.
+- **Focus.** Two Tabs on Compose, one on the reference, on the two rows with a tab stop.
+
+### The dropped keystroke (a port bug the frame batching exposed)
+
+The first recording bundled select-all, "7" and Enter into one step, and the Compose state line
+stayed at 9 with the backing input at "9" (`.logs/67-numberfield-first-recording-bundled-keys.json`);
+the rerun reproduced it (`.logs/69-s5-number-field-rerun.log`). A standalone script that redid the
+sequence with a probe between the keys did not reproduce it
+(`.logs/68b-typeafterclick-fresh-loads.log`; the first version of that script,
+`.logs/68-typeafterclick.log`, reported `document.activeElement` as the shadow host and navigated
+by hash only, so it did not reload between scenarios; both flaws are fixed in 68b), and neither
+did the harness with a probe between the keys (`.logs/70-debug-number-field-harness.log`). The
+delay sweep settled it: a fresh load, Tab, Tab, Ctrl+A, "7", a wait, Enter. With no wait the
+commit read 5, twice out of twice; with 16 ms or more it read 7 every time
+(`.logs/71-enter-after-typing-delay-sweep.log`, 17:20:20 → 17:20:52).
+
+Mechanism, cited: the backing input's `keydown`, `beforeinput` and `compositionend` events are
+collected (`DomInputStrategy.kt` lines 86–116; `NativeInputEventsProcessor.registerEvent`, line
+242) and replayed in timestamp order at one checkpoint scheduled for the next animation frame
+(`DomInputStrategy.kt` lines 57–62, `window.requestAnimationFrame`; `runCheckpoint`, line 99),
+where a typed character becomes an edit command and a non-typed key such as Enter becomes a key
+event to the scene. So a digit and an Enter pressed within one frame reach the text field's
+`onValueChange` and then the port's `onPreviewKeyEvent` in one checkpoint, before any
+recomposition. The port's `commit()` read a `parsed` value computed at composition, one frame
+stale, and wrote the old text back over the digit. The fix parses the field's current text at
+call time (`NumberField.kt`, `parsed()`); after it, five zero-gap runs in a row committed 7
+(`.logs/76-enter-after-typing-after-fix.log`, 17:28:20 → 17:28:44; script
+`.logs/enter-after-typing.mjs`). The semantics instrument cannot see this class of bug:
+`runComposeUiTest` awaits idle between `performTextInput` and `performKeyInput`, so every test
+sees a fresh composition; the JVM and wasmJs runs were green before and after the fix. The spec
+was then split into `type` and `enter` steps, one action per recorded step as in the other specs,
+and re-recorded (`.logs/72-s5-number-field-split-steps.log`). What of this is the framework's: the
+batching makes a composition-time capture in a key handler unsafe on the web target where it is
+safe on the JVM, which is a real difference between the targets, not a bug in either.
+
+### Mutation checks (seen red before any row counted)
+
+Record: `.logs/73-mutation-nf-meter-sep.md`; the report generated under mutation is
+`.logs/74-mutation-conformance-nf-meter-sep.md`. One build with three mutations
+(`.logs/73-mutation-build-nf-meter-sep.log`, 17:23:04 → 17:23:50): ArrowUp and PageUp step the
+wrong way, Meter's clamping removed, Separator's orientation ignored. Semantics instrument, JVM
+and wasmJs alike: `NumberFieldTest` 12/17 (five named failures, the same on both),
+`MeterTest` 5/6 (the range info is still clamped, by foundation's `progressSemantics` itself; the
+value text "150%" is what failed), `SeparatorTest` 3/4. Browser instrument
+(`.logs/74-mutation-playwright-nf-meter-sep.log`, 9 targets, 59.3 s): NumberField behaviour
+`17/17` → `12/17` with `text "Value: 6"` (up) and `text "Value: 5"` (down) missing, the Compose
+state line reading 4 and 3; Meter `6/6` → `5/6` and Separator `4/4` → `3/4` with their a11y
+columns unchanged, as declared. Restored from the scratchpad copies (`grep MUTATION` clean), the
+parse-at-call-time fix applied, rebuilt and re-run green on JVM and wasmJs
+(`.logs/75-s5-rebuild-after-parse-fix.log`, 17:27:17 → 17:28:05) before the final gate.
+
+### Substitutions and cuts
+
+- **NumberField** formats and parses `en-US` only (`formatNumber`, `parseNumber` in `stately`:
+  grouping comma, up to three decimals, halves away from zero) where the reference takes
+  `Intl.NumberFormatOptions` and a locale; partial-input validation handles the latin numbering
+  system and the plain minus sign only. `decimalPlaces` counts a step's decimals exactly where
+  react-stately's `roundToStepPrecision` counts from the string with the point as a digit (one
+  digit looser). No press-and-hold spinning, no scroll wheel, no assertive live announcement of
+  the value, no `aria-roledescription`, no `aria-controls`, no hidden form input. The step
+  buttons are unfocusable, not merely untabbable (the session-2 cut again). Home and End are
+  consumed even without a bound, as the hook's shortcuts are. A value that rounds to zero formats
+  without a sign where `Intl` prints `-0`.
+- **Meter** as ProgressBar: percent by default, no `Intl`; no indeterminate state (the reference
+  has none either).
+- **Separator** has no semantics of its own; the tests hold it to geometry and inertness.
+- **Gate:** unchanged from session 4.
+- Manual Orca pass: **still not done.** Five sessions.
+
+### Metrics (session 5)
+
+- Truth run: 114 UI tests on wasmJs in Chrome plus the distribution in the final gate, 4 s with
+  the compile cached and the distribution up to date (`.logs/77-final-gate-gradle-s5.log`,
+  17:29:09 → 17:29:14; XML 14:29:10Z–14:29:14Z); 19 stately tests on JVM and wasmJs-node. The
+  rebuild that produced the shipped distribution took 48 s (`.logs/75-s5-rebuild-after-parse-fix.log`).
+- Browser instrument: 46 targets, 6.2 min (`.logs/78-final-playwright-s5.log`, 17:30:46 →
+  17:36:56); all fifteen rows came out identical to their recordings apart from the timestamps, the twelve session-1-to-4 rows to the committed file and the three new rows to their first (Meter, Separator) or re-recorded (NumberField) runs.
+- Bundle (`.logs/metric5-bundle-s5.txt`): 4.61 MB gzipped, of which the app `.wasm` 1.18 MB
+  (was 1.15), skiko 3.33 MB (unchanged), JS 0.10 MB. The +0.03 MB is three ports, the number-field
+  state and the Material3 number-field row, dividers and progress indicator, not separated.
+- LOC (`.logs/metric7-loc-s5.txt`): main Kotlin 2508 (was 1872), commonMain 2485 (99 % shared);
+  `aria` 1425 main and 1635 test; `stately` 332 and 216; conformance 1558 lines of TS/JS.
+
 ## Would I pick this for real work
 
 Not yet an opinion with enough behind it. Two components in, the developer experience is
@@ -620,3 +812,14 @@ Focus that enters the canvas does not leave it by Tab or Shift+Tab, measured wit
 button to leave to; on 1.12.0 that is the shape of the web target, not a demo-page artefact.
 The Orca pass is still owed, and it now matters more: a screen reader user who tabs into this
 canvas hears buttons without state and then cannot tab out.
+
+Fifteen components in (session 5): the ceiling held its shape, and the new information is in the
+text pipeline. Meter and Separator added nothing to the browser tree at all, the second and third
+rows the browser instrument cannot see the port on, and the reference's own NumberField turns out
+to be a textbox by design, so its row is the cleanest since TextField: an unnamed group and a
+disabled bound button, both framework. What is new: the Compose web target replays a frame's
+keystrokes and keys together at the next animation frame, so a handler that captures state at
+composition time is one frame stale there and correct on the JVM. That cost a port bug the
+semantics instrument could not see and the browser instrument only saw because a step bundled
+two keys. And the numeric keyboard hint asks for `inputmode="number"`, which no browser
+recognises. Five components remain in Tier 1; the Orca pass is still owed.

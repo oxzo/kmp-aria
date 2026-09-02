@@ -33,6 +33,9 @@ field's value is invisible to the instrument although the mirror node carries it
 | ToggleButtonGroup | 1 | 15/15 | `radiogroup "Text alignment"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `role radio→button "Left"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `role radio→button "Center"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `role radio→button "Right"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `toolbar "Text style"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `disabled` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `checked` (space, right, space-center, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out); `pressed` (space-bold, right-italic, space-italic, right-edge, tab-out) | roles: button; states: none at any step | `radiogroup "Text alignment"`: framework (mirror never writes role=radiogroup; M3 control also lacks role radiogroup); `role radio→button "Left"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Center"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Right"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `toolbar "Text style"`: framework (mirror never writes role=toolbar; M3 control also lacks role toolbar); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected); `pressed`: framework (mirror writes no aria-pressed; M3 control also lacks pressed/checked/selected) | 1.12.0 |
 | CheckboxGroup | 1 | 9/9 | `group "Interests"` (load, space, tab-music, space-music, enter, click, focus); `role checkbox→button "Sports"` (load, space, tab-music, space-music, enter, click, focus); `role checkbox→button "Music"` (load, space, tab-music, space-music, enter, click, focus); `role checkbox→button "Reading"` (load, space, tab-music, space-music, enter, click, focus); `disabled` (load, space, tab-music, space-music, enter, click, focus); `checked` (space, tab-music, space-music, enter, click) | roles: button (a nameless one among them); states: none at any step | `group "Interests"`: framework (mirror never writes role=group; M3 control also lacks role group); `role checkbox→button "Sports"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `role checkbox→button "Music"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `role checkbox→button "Reading"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected) | 1.12.0 |
 | SearchField | 1 | 10/10 | `role searchbox→textbox "Search"` (load, type, escape, type-again, enter, click-clear, focus) | roles: textbox, button (a nameless one among them); states: none at any step | `role searchbox→textbox "Search"`: framework (mirror never writes role=searchbox; M3 control also lacks role searchbox) | 1.12.0 |
+| NumberField | 1 | 17/17 | `group (unnamed)` (load, up, down, home, end, click-dec, type, enter, focus); `disabled` (home, end) | roles: button, textbox (a nameless one among them); states: none at any step | `group (unnamed)`: framework (mirror never writes role=group; M3 control also lacks role group); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled) | 1.12.0 |
+| Meter | 1 | 6/6 | `meter "Storage space"` (load, enter, click, focus) | roles: button; states: none at any step | `meter "Storage space"`: framework (mirror never writes role=meter; M3 control also lacks role meter) | 1.12.0 |
+| Separator | 1 | 4/4 | `separator (unnamed)` (load) | roles: none; states: none at any step | `separator (unnamed)`: framework (mirror never writes role=separator; M3 control also lacks role separator) | 1.12.0 |
 
 ## Framework controls recorded without a port counterpart
 
@@ -45,7 +48,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 | M3 Button | `#/m3-button` | button | "Press me", "Disabled" | none at any step | "Pressed 0 times", "Pressed 1 times", "Pressed 2 times" | 1.12.0 |
 | M3 IconToggleButton | `#/m3-toggle-button` | button | "☆", "★" | none at any step | "Not selected", "Selected" | 1.12.0 |
 
-<details><summary>M3 Button snapshots (recorded 2026-09-02T13:13:23.922Z)</summary>
+<details><summary>M3 Button snapshots (recorded 2026-09-02T14:32:50.520Z)</summary>
 
 
 **load**
@@ -90,7 +93,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 </details>
 
-<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T13:13:17.766Z)</summary>
+<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T14:32:44.370Z)</summary>
 
 
 **load**
@@ -135,7 +138,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 ### Button
 
-Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T13:11:44.582Z
+Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T14:31:11.143Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -292,7 +295,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### ToggleButton
 
-Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T13:16:33.533Z
+Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T14:36:56.770Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -432,7 +435,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Checkbox
 
-Reference: https://react-aria.adobe.com/Checkbox · route `#/checkbox` · M3 control `#/m3-checkbox` · recorded 2026-09-02T13:12:33.607Z
+Reference: https://react-aria.adobe.com/Checkbox · route `#/checkbox` · M3 control `#/m3-checkbox` · recorded 2026-09-02T14:32:00.180Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -609,7 +612,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Switch
 
-Reference: https://react-aria.adobe.com/Switch · route `#/switch` · M3 control `#/m3-switch` · recorded 2026-09-02T13:14:58.316Z
+Reference: https://react-aria.adobe.com/Switch · route `#/switch` · M3 control `#/m3-switch` · recorded 2026-09-02T14:35:21.533Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -754,7 +757,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### RadioGroup
 
-Reference: https://react-aria.adobe.com/RadioGroup · route `#/radio-group` · M3 control `#/m3-radio` · recorded 2026-09-02T13:14:09.297Z
+Reference: https://react-aria.adobe.com/RadioGroup · route `#/radio-group` · M3 control `#/m3-radio` · recorded 2026-09-02T14:34:28.547Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1049,7 +1052,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### TextField
 
-Reference: https://react-aria.adobe.com/TextField · route `#/text-field` · M3 control `#/m3-text-field` · recorded 2026-09-02T13:15:22.828Z
+Reference: https://react-aria.adobe.com/TextField · route `#/text-field` · M3 control `#/m3-text-field` · recorded 2026-09-02T14:35:46.040Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1259,7 +1262,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Link
 
-Reference: https://react-aria.adobe.com/Link · route `#/link` · M3 control `#/fw-link` (Material3 has no link widget; the control is foundation's own link path, a LinkAnnotation.Clickable inside BasicText) · recorded 2026-09-02T13:13:11.620Z
+Reference: https://react-aria.adobe.com/Link · route `#/link` · M3 control `#/fw-link` (Material3 has no link widget; the control is foundation's own link path, a LinkAnnotation.Clickable inside BasicText) · recorded 2026-09-02T14:32:38.206Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1459,7 +1462,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### ProgressBar
 
-Reference: https://react-aria.adobe.com/ProgressBar · route `#/progress-bar` · M3 control `#/m3-progress-bar` · recorded 2026-09-02T13:13:41.176Z
+Reference: https://react-aria.adobe.com/ProgressBar · route `#/progress-bar` · M3 control `#/m3-progress-bar` · recorded 2026-09-02T14:34:00.422Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1596,7 +1599,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Disclosure
 
-Reference: https://react-aria.adobe.com/Disclosure · route `#/disclosure` · recorded 2026-09-02T13:12:47.126Z
+Reference: https://react-aria.adobe.com/Disclosure · route `#/disclosure` · recorded 2026-09-02T14:32:13.707Z
 
 Tabs until the widget reported focus: reference 1, compose 2 (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1704,7 +1707,7 @@ Tabs until the widget reported focus: reference 1, compose 2 (M3 controls carry 
 
 ### ToggleButtonGroup
 
-Reference: https://react-aria.adobe.com/ToggleButtonGroup · route `#/toggle-button-group` · M3 control `#/m3-toggle-button-group` · recorded 2026-09-02T13:16:12.675Z
+Reference: https://react-aria.adobe.com/ToggleButtonGroup · route `#/toggle-button-group` · M3 control `#/m3-toggle-button-group` · recorded 2026-09-02T14:36:35.902Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -2243,7 +2246,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### CheckboxGroup
 
-Reference: https://react-aria.adobe.com/CheckboxGroup · route `#/checkbox-group` · M3 control `#/m3-checkbox-group` (Material3 has no checkbox group widget; the control is its Checkboxes in a Column) · recorded 2026-09-02T13:12:12.730Z
+Reference: https://react-aria.adobe.com/CheckboxGroup · route `#/checkbox-group` · M3 control `#/m3-checkbox-group` (Material3 has no checkbox group widget; the control is its Checkboxes in a Column) · recorded 2026-09-02T14:31:39.287Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -2538,7 +2541,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### SearchField
 
-Reference: https://react-aria.adobe.com/SearchField · route `#/search-field` · M3 control `#/m3-search-field` (Material3's SearchBar with SearchBarDefaults.InputField, collapsed; its clear control is a trailing IconButton) · recorded 2026-09-02T13:14:37.446Z
+Reference: https://react-aria.adobe.com/SearchField · route `#/search-field` · M3 control `#/m3-search-field` (Material3's SearchBar with SearchBarDefaults.InputField, collapsed; its clear control is a trailing IconButton) · recorded 2026-09-02T14:34:56.708Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -2757,6 +2760,501 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 ```yaml
 - text: "Value: Submitted: kotlincompose"
 - textbox "Search"
+```
+
+</details>
+
+### NumberField
+
+Reference: https://react-aria.adobe.com/NumberField · route `#/number-field` · M3 control `#/m3-number-field` (Material3 has no number field widget; the control is its TextField with KeyboardType.Number between two IconButtons in a Row) · recorded 2026-09-02T14:33:43.171Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "5"
+  - button "Increase Quantity": +
+- paragraph: "Value: 5"
+```
+
+**tab1** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "5"
+  - button "Increase Quantity": +
+- paragraph: "Value: 5"
+```
+
+**up** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "6"
+  - button "Increase Quantity": +
+- paragraph: "Value: 6"
+```
+
+**down** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "5"
+  - button "Increase Quantity": +
+- paragraph: "Value: 5"
+```
+
+**home** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity" [disabled]: "-"
+  - textbox "Quantity": "0"
+  - button "Increase Quantity": +
+- paragraph: "Value: 0"
+```
+
+**end** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "10"
+  - button "Increase Quantity" [disabled]: +
+- paragraph: "Value: 10"
+```
+
+**click-dec** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "9"
+  - button "Increase Quantity": +
+- paragraph: "Value: 9"
+```
+
+**type** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "7"
+  - button "Increase Quantity": +
+- paragraph: "Value: 9"
+```
+
+**enter** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- group:
+  - button "Decrease Quantity": "-"
+  - textbox "Quantity": "7"
+  - button "Increase Quantity": +
+- paragraph: "Value: 7"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity"
+- button "Increase Quantity": +
+- text: "Value: 5"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity"
+- button "Increase Quantity": +
+- text: "Value: 5"
+```
+
+**tab2** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 5"
+- textbox: "5"
+```
+
+**up** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 6"
+- textbox: "6"
+```
+
+**down** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 5"
+- textbox: "5"
+```
+
+**home** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 0"
+- textbox: "0"
+```
+
+**end** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 10"
+- textbox: "10"
+```
+
+**click-dec** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 9"
+- textbox: "9"
+```
+
+**type** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 9"
+- textbox: "7"
+```
+
+**enter** (focused: Quantity)
+
+```yaml
+- text: Quantity
+- button "Decrease Quantity": "-"
+- textbox "Quantity (focused)"
+- button "Increase Quantity": +
+- text: "Value: 7"
+- textbox: "7"
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 5"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 5"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 5"
+```
+
+**up** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 5"
+```
+
+**down** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 5"
+```
+
+**home** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 5"
+```
+
+**end** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 5"
+```
+
+**click-dec** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 4"
+```
+
+**type** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 4"
+```
+
+**enter** (focused: none)
+
+```yaml
+- button "-"
+- textbox
+- button "+"
+- text: "Value: 3"
+```
+
+</details>
+
+### Meter
+
+Reference: https://react-aria.adobe.com/Meter · route `#/meter` · M3 control `#/m3-meter` (Material3 has no meter widget; the control is its LinearProgressIndicator, the same widget as the ProgressBar control) · recorded 2026-09-02T14:33:07.787Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- meter "Storage space": Storage space 25%
+- button "Fill"
+- paragraph: "Value: 25"
+```
+
+**tab1** (focused: Fill)
+
+```yaml
+- meter "Storage space": Storage space 25%
+- button "Fill"
+- paragraph: "Value: 25"
+```
+
+**enter** (focused: Fill)
+
+```yaml
+- meter "Storage space": Storage space 50%
+- button "Fill"
+- paragraph: "Value: 50"
+```
+
+**click** (focused: Fill)
+
+```yaml
+- meter "Storage space": Storage space 75%
+- button "Fill"
+- paragraph: "Value: 75"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Storage space 25%
+- button "Fill"
+- text: "Value: 25"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Storage space 25%
+- button "Fill"
+- text: "Value: 25"
+```
+
+**tab2** (focused: Fill)
+
+```yaml
+- text: Storage space 25%
+- button "Fill (focused)": Fill
+- text: "Value: 25"
+```
+
+**enter** (focused: Fill)
+
+```yaml
+- text: Storage space 50%
+- button "Fill (focused)": Fill
+- text: "Value: 50"
+```
+
+**click** (focused: Fill)
+
+```yaml
+- text: Storage space 75%
+- button "Fill (focused)": Fill
+- text: "Value: 75"
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Storage space
+- button "Fill"
+- text: "Value: 25"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Storage space
+- button "Fill"
+- text: "Value: 25"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- text: Storage space
+- button "Fill"
+- text: "Value: 25"
+```
+
+**enter** (focused: none)
+
+```yaml
+- text: Storage space
+- button "Fill"
+- text: "Value: 50"
+```
+
+**click** (focused: none)
+
+```yaml
+- text: Storage space
+- button "Fill"
+- text: "Value: 75"
+```
+
+</details>
+
+### Separator
+
+Reference: https://react-aria.adobe.com/Separator · route `#/separator` · M3 control `#/m3-separator` (Material3's HorizontalDivider and VerticalDivider) · recorded 2026-09-02T14:35:00.663Z
+
+Tabs until the widget reported focus: reference n/a, compose n/a, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- paragraph: Above
+- separator
+- paragraph: Below
+- paragraph: Left
+- separator
+- paragraph: Right
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Above Below Left Right
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Above Below Left Right
 ```
 
 </details>

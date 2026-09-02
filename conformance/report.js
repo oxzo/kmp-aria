@@ -140,6 +140,10 @@ function diffTarget(ref, target) {
     }
     for (const w of rw) {
       const same = exact.get(w)
+      // A nameless reference widget (an unnamed group, a separator) has no name to fall back
+      // on, so it is missing unless the same role is there; matching it to any nameless target
+      // widget would let Compose's nameless backing textbox pose as it.
+      if (!same && w.name === null) { note(`${w.role} (unnamed)`, step); continue }
       const byName = same ?? tw.find((t) => !consumed.has(t) && t.name === w.name)
       if (!byName) { note(`${w.role} "${w.name}"`, step); continue }
       if (!same) { note(`role ${w.role}→${byName.role} "${w.name}"`, step); consumed.add(byName) }
@@ -184,9 +188,11 @@ function attribute(key, compose, m3) {
   // otherwise the port never produced the name.
   const changed = key.match(/^role ([a-z]+)→[a-z]+ "(.*)"$/)
   const missing = key.match(/^([a-z]+) "(.*)"$/)
-  if (changed || missing) {
-    const role = (changed ?? missing)[1]
-    const name = (changed ?? missing)[2]
+  // `X (unnamed)`: a nameless widget with no counterpart of that role; attributed by role alone.
+  const unnamed = key.match(/^([a-z]+) \(unnamed\)$/)
+  if (changed || missing || unnamed) {
+    const role = (changed ?? missing ?? unnamed)[1]
+    const name = (changed ?? missing)?.[2]
     if (missing && compose && !mirrorHasName(compose, name)) return 'port (name)'
     const parts = []
     if (compose) parts.push(mirrorHasRole(compose, role) ? `mirror writes role=${role}: instrument?` : `mirror never writes role=${role}`)

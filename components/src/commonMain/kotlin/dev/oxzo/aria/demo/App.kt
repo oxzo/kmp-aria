@@ -6,14 +6,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -28,6 +33,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +52,7 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
@@ -57,11 +64,14 @@ import dev.oxzo.aria.AriaCheckboxGroup
 import dev.oxzo.aria.AriaCheckboxGroupScope
 import dev.oxzo.aria.AriaDisclosure
 import dev.oxzo.aria.AriaLink
+import dev.oxzo.aria.AriaMeter
+import dev.oxzo.aria.AriaNumberField
 import dev.oxzo.aria.AriaProgressBar
 import dev.oxzo.aria.AriaRadio
 import dev.oxzo.aria.AriaRadioGroup
 import dev.oxzo.aria.AriaRadioGroupScope
 import dev.oxzo.aria.AriaSearchField
+import dev.oxzo.aria.AriaSeparator
 import dev.oxzo.aria.AriaSwitch
 import dev.oxzo.aria.AriaTextField
 import dev.oxzo.aria.AriaToggleButton
@@ -70,6 +80,7 @@ import dev.oxzo.aria.AriaToggleButtonGroupScope
 import dev.oxzo.aria.interactions.AriaDebug
 import dev.oxzo.aria.interactions.focusMarker
 import dev.oxzo.aria.stately.SelectionMode
+import dev.oxzo.aria.stately.formatNumber
 
 /**
  * Demo routes. One per component, mirrored by `conformance/reference` so the Playwright
@@ -87,8 +98,11 @@ val demoRoutes: List<String> = listOf(
     "/radio-group",
     "/text-field",
     "/search-field",
+    "/number-field",
     "/link",
     "/progress-bar",
+    "/meter",
+    "/separator",
     "/disclosure",
     "/m3-button",
     "/m3-toggle-button",
@@ -99,8 +113,11 @@ val demoRoutes: List<String> = listOf(
     "/m3-radio",
     "/m3-text-field",
     "/m3-search-field",
+    "/m3-number-field",
     "/fw-link",
     "/m3-progress-bar",
+    "/m3-meter",
+    "/m3-separator",
 )
 
 @Composable
@@ -121,11 +138,17 @@ fun App(route: String) {
                 "/radio-group" -> RadioGroupDemo()
                 "/text-field" -> TextFieldDemo()
                 "/search-field" -> SearchFieldDemo()
+                "/number-field" -> NumberFieldDemo()
                 "/link" -> LinkDemo()
                 "/progress-bar" -> ProgressBarDemo()
+                "/meter" -> MeterDemo()
+                "/separator" -> SeparatorDemo()
                 "/disclosure" -> DisclosureDemo()
                 "/fw-link" -> FoundationLinkDemo()
                 "/m3-progress-bar" -> M3ProgressBarDemo()
+                "/m3-meter" -> M3MeterDemo()
+                "/m3-separator" -> M3SeparatorDemo()
+                "/m3-number-field" -> M3NumberFieldDemo()
                 "/m3-button" -> M3ButtonDemo()
                 "/m3-checkbox" -> M3CheckboxDemo()
                 "/m3-checkbox-group" -> M3CheckboxGroupDemo()
@@ -419,6 +442,27 @@ private fun SearchFieldDemo() {
     BasicText("Submitted: $submitted", modifier = Modifier.testTag("submitted"), style = label)
 }
 
+/** Quantity 0–10, step 1, starting at 5; the state line shows the committed value. */
+@Composable
+private fun NumberFieldDemo() {
+    var value by remember { mutableStateOf<Double?>(5.0) }
+    AriaNumberField(
+        value = value,
+        onValueChange = { value = it },
+        label = "Quantity",
+        modifier = Modifier.testTag("nf").focusMarker("Quantity").border(1.dp, Color.Black).padding(4.dp).width(48.dp),
+        minValue = 0.0,
+        maxValue = 10.0,
+        textStyle = label,
+        groupModifier = Modifier.testTag("group"),
+        incrementModifier = Modifier.testTag("inc").border(1.dp, Color.Black).padding(4.dp),
+        decrementModifier = Modifier.testTag("dec").border(1.dp, Color.Black).padding(4.dp),
+    )
+    BasicText(numberState(value), modifier = Modifier.testTag("state"), style = label)
+}
+
+private fun numberState(value: Double?): String = "Value: ${value?.let { formatNumber(it) } ?: "none"}"
+
 private val linkStyle = label.copy(textDecoration = TextDecoration.Underline)
 
 @Composable
@@ -491,6 +535,34 @@ private fun Track(percentage: Float?) {
 }
 
 @Composable
+private fun MeterDemo() {
+    var value by remember { mutableStateOf(25f) }
+    AriaMeter(value = value, label = "Storage space", modifier = Modifier.testTag("meter"), labelStyle = label) { percentage, _ ->
+        Track(percentage)
+    }
+    AriaButton(
+        onPress = { value = (value + 25f).coerceAtMost(100f) },
+        modifier = Modifier.testTag("fill").focusMarker("Fill").border(1.dp, Color.Black),
+    ) {
+        BasicText("Fill", modifier = Modifier.padding(8.dp), style = label)
+    }
+    BasicText("Value: ${value.toInt()}", modifier = Modifier.testTag("state"), style = label)
+}
+
+/** A horizontal separator between two paragraphs and a vertical one between two words. */
+@Composable
+private fun SeparatorDemo() {
+    BasicText("Above", style = label)
+    AriaSeparator(Modifier.testTag("sep"))
+    BasicText("Below", style = label)
+    Row(Modifier.height(24.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        BasicText("Left", style = label)
+        AriaSeparator(Modifier.testTag("sep-v"), orientation = Orientation.Vertical)
+        BasicText("Right", style = label)
+    }
+}
+
+@Composable
 private fun DisclosureDemo() {
     var open by remember { mutableStateOf(false) }
     AriaDisclosure(
@@ -513,6 +585,51 @@ private fun M3ProgressBarDemo() {
     LinearProgressIndicator(progress = { value / 100f }, modifier = Modifier.testTag("pb"))
     Button(onClick = { value = (value + 30f).coerceAtMost(100f) }, modifier = Modifier.testTag("adv")) { Text("Advance") }
     Text("Value: ${value.toInt()}", modifier = Modifier.testTag("state"))
+}
+
+/** Material3 has no meter widget; the control is the same LinearProgressIndicator as the ProgressBar control. */
+@Composable
+private fun M3MeterDemo() {
+    var value by remember { mutableStateOf(25f) }
+    Text("Storage space")
+    LinearProgressIndicator(progress = { value / 100f }, modifier = Modifier.testTag("meter"))
+    Button(onClick = { value = (value + 25f).coerceAtMost(100f) }, modifier = Modifier.testTag("fill")) { Text("Fill") }
+    Text("Value: ${value.toInt()}", modifier = Modifier.testTag("state"))
+}
+
+/** Material3's dividers, horizontal and vertical. */
+@Composable
+private fun M3SeparatorDemo() {
+    Text("Above")
+    HorizontalDivider(Modifier.testTag("sep"))
+    Text("Below")
+    Row(Modifier.height(24.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text("Left")
+        VerticalDivider(Modifier.testTag("sep-v"))
+        Text("Right")
+    }
+}
+
+/**
+ * Material3 has no number field; the control is its TextField with a numeric keyboard between two
+ * IconButtons in a Row, the buttons disabled at the bounds.
+ */
+@Composable
+private fun M3NumberFieldDemo() {
+    var value by remember { mutableStateOf(5) }
+    Row(Modifier.testTag("group"), verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = { value-- }, enabled = value > 0, modifier = Modifier.testTag("dec")) { Text("-") }
+        TextField(
+            value = value.toString(),
+            onValueChange = { text -> text.toIntOrNull()?.let { value = it.coerceIn(0, 10) } },
+            label = { Text("Quantity") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            modifier = Modifier.testTag("nf").width(96.dp),
+        )
+        IconButton(onClick = { value++ }, enabled = value < 10, modifier = Modifier.testTag("inc")) { Text("+") }
+    }
+    Text("Value: $value", modifier = Modifier.testTag("state"))
 }
 
 @Composable

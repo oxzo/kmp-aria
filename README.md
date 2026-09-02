@@ -187,5 +187,26 @@ mutation was seen red on both runs of the semantics instrument and on the browse
   the measured properties.
 - Bundle 4.58 MB gzipped (skiko unchanged); main Kotlin 1872 lines, 99 % shared.
 
-Not done: the manual Orca pass. Next: the rest of Tier 1 (NumberField, Meter, Separator, Group,
-Toolbar, Form, DisclosureGroup, Breadcrumbs), each with UI tests, a spec, and a row.
+**Session 5 (2026-09-02): NumberField, Meter, Separator.** Fifteen rows. NumberField's mutation
+was seen red on both runs of the semantics instrument and on the browser instrument; Meter's and
+Separator's on the semantics instrument only, because the browser instrument cannot see either port
+(declared in NOTES.md before the rows were recorded).
+
+- The reference's NumberField is a plain `textbox` by design (`useNumberField` nulls the spinbutton
+  role and the value attributes), so the row's only gaps are the unnamed `group` and `disabled` on
+  a step button at its bound, both framework. The two step buttons cross by name and stay out of
+  the tab order on both sides.
+- Meter and Separator add nothing to the browser tree: `progressSemantics` has no role (as
+  ProgressBar), and a separator line produces no node at all; Material3's `LinearProgressIndicator`
+  and dividers do the same.
+- The web target replays a frame's keystrokes and non-typed keys together at the next animation
+  frame (`NativeInputEventsProcessor`), so a digit and an Enter pressed within one frame reach a
+  key handler before recomposition. A composition-time capture in the port's commit was one frame
+  stale and dropped the digit; fixed by parsing at call time, verified with a zero-gap sweep. The
+  semantics instrument cannot see this class of bug.
+- `KeyboardType.Number` becomes `inputmode="number"` on the backing `<input>`, which is not an
+  `inputmode` keyword (`numeric` is), so the numeric soft-keyboard hint is lost on the web.
+- Bundle 4.61 MB gzipped (skiko unchanged); main Kotlin 2508 lines, 99 % shared.
+
+Not done: the manual Orca pass. Next: the rest of Tier 1 (Group, Toolbar, Form, DisclosureGroup,
+Breadcrumbs), each with UI tests, a spec, and a row.

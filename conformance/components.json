@@ -96,5 +96,32 @@
     "controlNote": "Material3's SearchBar with SearchBarDefaults.InputField, collapsed; its clear control is a trailing IconButton",
     "testClass": "dev.oxzo.aria.SearchFieldTest",
     "reference": "https://react-aria.adobe.com/SearchField"
+  },
+  {
+    "component": "NumberField",
+    "tier": 1,
+    "route": "/number-field",
+    "m3Route": "/m3-number-field",
+    "controlNote": "Material3 has no number field widget; the control is its TextField with KeyboardType.Number between two IconButtons in a Row",
+    "testClass": "dev.oxzo.aria.NumberFieldTest",
+    "reference": "https://react-aria.adobe.com/NumberField"
+  },
+  {
+    "component": "Meter",
+    "tier": 1,
+    "route": "/meter",
+    "m3Route": "/m3-meter",
+    "controlNote": "Material3 has no meter widget; the control is its LinearProgressIndicator, the same widget as the ProgressBar control",
+    "testClass": "dev.oxzo.aria.MeterTest",
+    "reference": "https://react-aria.adobe.com/Meter"
+  },
+  {
+    "component": "Separator",
+    "tier": 1,
+    "route": "/separator",
+    "m3Route": "/m3-separator",
+    "controlNote": "Material3's HorizontalDivider and VerticalDivider",
+    "testClass": "dev.oxzo.aria.SeparatorTest",
+    "reference": "https://react-aria.adobe.com/Separator"
   }
 ]
