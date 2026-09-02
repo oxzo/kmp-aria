@@ -169,16 +169,19 @@ port at all (below).
 mutation was seen red on both runs of the semantics instrument and on the browser instrument.
 
 - The three group roles (`radiogroup`, `toolbar`, `group`) and `searchbox` never reach the
-  browser, and none of them has a Compose semantics vocabulary or a `jb-main` role id, so no
-  pending release flips them; the items fall to stateless `button`s as before. Material3's
+  browser; none of them has a Compose `Role` or a `jb-main` role id (the one group property,
+  `SelectableGroup`, is not read), so nothing on today's `jb-main` flips them; the items fall to
+  stateless `button`s as before. Material3's
   segmented button rows, its Checkboxes in a Column and its `SearchBar` do the same, which is
   what attributes every one of these rows to the framework.
-- Behaviour matched the reference at every step on all three rows: roving focus with arrows
+- Behaviour matched the reference on every diffed item of all three rows (the unscored focus
+  destination at the toggle group's `tab-out` differs, which is the Tab finding below): roving focus with arrows
   that do not wrap and skip disabled items, one tab stop per toggle group, press-ordered
   checkbox values, Escape-clears / Enter-submits and a clear button outside the tab order.
-- **Keyboard focus that enters the canvas does not leave it.** With a plain button appended
-  after the canvas, Tab and Shift+Tab cycled among the Compose widgets and never reached it
-  (NOTES.md "Session 4"): the scene consumes Tab and `preventDefault`s it.
+- **Keyboard focus that enters the canvas does not leave it** (Chromium). With a plain,
+  focusable button appended after the canvas, Tab and Shift+Tab cycled among the Compose
+  widgets and never reached it, while Shift+Tab from that button did enter the canvas
+  (NOTES.md "Session 4"): the window `preventDefault`s every key the scene consumes.
 - Material3 1.12.0-alpha03 has no Link and no Disclosure widget (verified against its sources
   jar); `jb-main`'s listener gained a scroll controller since the last check and moved none of
   the measured properties.

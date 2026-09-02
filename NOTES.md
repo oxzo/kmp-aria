@@ -399,15 +399,16 @@ Restored and re-run clean (JVM, wasmJs, browser) before CONFORMANCE.md was gener
 
 ### The build
 
-The gate with `--rerun` after every test task executed the 53 UI tests (XML 15:38:15) and the
-six stately tests; the Playwright gate (28 targets, 15:41:34 → 15:45:01) reproduced the nine
+The gate with `--rerun` after every test task executed the 53 UI tests and the six stately tests
+(`.logs/42-gate-s4.log`, BUILD SUCCESSFUL in 30 s ending 15:38:41; the XML timestamps read that
+morning have since been overwritten by later runs); the Playwright gate (28 targets, 15:41:34 → 15:45:01) reproduced the nine
 committed rows apart from the recorded timestamps (zero non-timestamp diff lines). Three
 components, thirty-four new UI tests and five state tests: ToggleButtonGroup (15 + 5) and
 CheckboxGroup (9) went first-try green on the JVM and on wasmJs; SearchField (10) needed two
 compile fixes before its first run (a lambda whose last expression was `onClear?.invoke()` had
 type `() -> Unit?`; `assertExists` and `assertDoesNotExist` are members, not imports), then went
 green on both. Neither the harness nor the report changed this session; no spec helper was
-touched. From the gate's tests (15:38:15) to the final gate (16:10:43) is thirty-two minutes of wall
+touched. From the gate's end (15:38:41) to the final gate (16:10:43) is thirty-two minutes of wall
 clock; the two compile fixes sit between the CheckboxGroup recording's end (16:03:36) and the
 passing JVM run (16:05:17), under two minutes. The commit (c06f269, 16:17:18) closes the session.
 
@@ -444,6 +445,9 @@ What fought back was Gradle, once more, and the build cache once:
   step: Space selects, ArrowRight moves focus without selecting, Space on the new item replaces
   the selection, Enter deselects, click selects, one Tab leaves the first group for Bold, the
   style group accumulates, ArrowRight from Italic stays on Italic (Underline disabled, no wrap).
+  The one observable difference the diff does not score is focus at `tab-out`: the reference's
+  Tab left the page (`focused: none`), the port's landed on Right, the alignment group's
+  remembered item, which is the Tab finding below.
   A footnote from the M3 snapshots: the segmented buttons' mirror order changes with focus and
   selection (`Center, Right, Left` after the first Tab), because `SegmentedButton` raises the
   selected or interacted item's z-index (`interactionZIndex`) and the semantics tree is z-sorted.
@@ -473,20 +477,28 @@ What fought back was Gradle, once more, and the build cache once:
 
 ### Tab cannot leave the canvas (the session-2 question, answered on 1.12.0)
 
-Measured with a plain `<button id="after-canvas">` appended after `#composeApp` at runtime
-(`.logs/51-tabwrap.log`, script kept out of the repo; `index.html` untouched). On
+Measured with a plain `<button id="after-canvas">` appended to the end of `<body>` at runtime
+(`.logs/51-tabwrap.log`; re-run with the sibling logged in `.logs/51b-tabwrap-sibling-check.log`,
+script `.logs/tabwrap.mjs`; `index.html` untouched). The re-run records the button as present
+with `tabIndex=0`, a programmatic `focus()` on it makes it `document.activeElement`, and one
+Shift+Tab from it puts focus back into the canvas; so the sibling is reachable and focusable,
+and the only direction that fails is out. On
 `#/toggle-button-group` the first Tab focused the container `div` with no widget marked, the
 second Left, then Bold, Left, Bold, Left; three Shift+Tabs went Bold, Left, Bold.
 `document.activeElement` was the container `div` on every press and never the injected button.
 On `#/button` (one tab stop) every Tab and Shift+Tab kept "Press me". Mechanism in the 1.12.0
 sources: `ComposeWindowInternal.web.kt` `processKeyboardEvent` calls `preventDefault()` on any
-key the scene consumed (line 385), and the scene consumes Tab for its own traversal, which wraps
-inside the scene; the backing text input does the same for Tab explicitly
+key the scene reports as consumed (line 385); that the scene consumes Tab is inferred from the
+observed wrap, not from a cited line; the backing text input prevents Tab's default explicitly
 (`DomInputStrategy.kt` lines 82–91, "Compose logic will handle the focus movement"). Once
 keyboard focus is inside the canvas, Tab and Shift+Tab do not take it out. Measured in
-Chromium through Playwright key presses on two demo pages; the ceiling note's "Tab wraps" bullet
-can drop its hedge for 1.12.0, and whether the tracker's resolved tab-focus issues (CMP-9388,
-CMP-10554, listed there) describe this case was not read this session.
+Chromium through Playwright key presses on two demo pages. The hedged "Tab wraps" bullet this
+answers is the vault project note's own session-2 bullet, not anything in the ceiling note
+(`kmp-web-accessibility` has no such bullet; its WCAG 2.1.1 Keyboard row, "at risk", gains a
+measured instance). Whether the tracker's resolved tab-focus issues (CMP-9388, CMP-10554, listed
+in the ceiling note) describe this case was not read this session. A footnote from the re-run:
+while the DOM button held focus, the Compose focus marker still read "Left (focused)", so the
+scene's focus state did not clear when DOM focus left the canvas programmatically.
 
 ### Two unverified specifics from session 3, now checked
 
@@ -497,17 +509,21 @@ CMP-10554, listed there) describe this case was not read this session.
   styles `LinkAnnotation`s inside text. What it does have, and this session used:
   `SegmentedButton.kt`, `ButtonGroup.kt`, `SearchBar.kt`.
 - **Compose release watch.** 1.12.0 is still the latest (`maven-metadata.xml` for `ui`:
-  `<latest>1.12.0</latest>`, `lastUpdated 20260825095827`, checked 16:05). The `jb-main`
+  `<latest>1.12.0</latest>`, `lastUpdated 20260825095827`; fetched 16:05, saved as
+  `.logs/ui-maven-metadata-2026-09-02T1605.xml`). The `jb-main`
   `ComposeWebSemanticsListener.kt` has changed since the copy in `.logs/` (23461 → 25985 bytes;
   new copy saved as `ComposeWebSemanticsListener.jb-main-2026-09-02T1605.kt`): an
   `A11YScrollController` for scroll synchronization and positioning, and `aria-live="off"` on
   `list` and `grid` nodes. None of the measured properties moved: still no `aria-checked`,
   `aria-pressed`, `aria-expanded` or `aria-value*`; `aria-disabled` still written; `aria-label`
-  still never removed. `A11YImplementationUtils.kt` is byte-identical to the earlier copy.
+  still never removed. `A11YImplementationUtils.kt` is byte-identical to the earlier copy (the
+  16:05 fetch saved as `.logs/A11YImplementationUtils.jb-main-2026-09-02T1605.kt`).
 
 ### Mutation checks (seen red before any row counted)
 
-Records: `.logs/47-mutation-tbg.md` and `.logs/58-mutation-cbg-sf.md`.
+Records: `.logs/47-mutation-tbg.md` and `.logs/58-mutation-cbg-sf.md`; the reports generated
+under mutation are `.logs/48-mutation-conformance-tbg.md` and
+`.logs/59-mutation-conformance-cbg-sf.md` (the same artifact class as sessions 2 and 3).
 
 1. ToggleButtonGroup, one build with the arrow dispatch removed and single-mode `toggleKey`
    never deselecting: `ToggleButtonGroupTest` 9/15 on JVM and wasmJs (six named failures, the
@@ -596,8 +612,8 @@ owed.
 
 Twelve components in (session 4): nothing new crossed, and that is the finding. Three group
 components brought three group roles (`radiogroup`, `toolbar`, `group`) and one input role
-(`searchbox`), and none of them has a Compose vocabulary or a `jb-main` role id, so the next
-release cannot flip those rows; the per-item roles and states fall as before. The Compose side
+(`searchbox`), and none of them has a Compose `Role` or a `jb-main` role id (the one group property,
+`SelectableGroup`, is not read), so nothing on today's `jb-main` flips those rows; the per-item roles and states fall as before. The Compose side
 kept being the easy part: thirty-four UI tests, two compile slips, no behaviour bug, roving focus
 and keyboard shortcuts included. The new information this session is on the keyboard side.
 Focus that enters the canvas does not leave it by Tab or Shift+Tab, measured with a sibling
