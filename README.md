@@ -115,7 +115,8 @@ script-generated; the ToggleButton row shows `pressed` missing on Compose and pr
 reference; both instruments were seen red under mutation before the rows were generated.
 
 **Session 2 (2026-09-02): Checkbox, Switch, RadioGroup, TextField.** Six rows, all
-script-generated; every row's behaviour mutation was seen red on both instruments first.
+script-generated; every row's behaviour mutation was seen red on the browser instrument and
+on the JVM run of the semantics instrument first (not re-run on wasmJs under mutation).
 
 Measured on Compose Multiplatform 1.12.0 (see NOTES.md for mechanism and source lines):
 
