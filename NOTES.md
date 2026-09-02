@@ -73,9 +73,10 @@ mechanism behind each missing item, with the source line.
 - **Role collapse (not yet a row; it will be every Tier-1 stateful row).** 1.12.0
   `getRoleId()` lines 345–348: `if (this.contains(SemanticsActions.OnClick)) roleId =
   Role.Button` with no guard, so any explicit `Role.Checkbox` / `Switch` / `RadioButton` /
-  `Tab` on a clickable node is overridden to `button`. Observed: Material3 `Switch` is
+  `Tab` on a clickable node is overridden to `button`. Observed and recorded in
+  CONFORMANCE.md's framework-controls section (`m3-controls.spec.ts`): Material3 `Switch` is
   emitted as a nameless `button`; Material3 `IconToggleButton` as `button`; my mutation
-  setting `Role.Checkbox` on the port produced `button`. `jb-main` guards this with
+  setting `Role.Checkbox` on the port produced `button` (mutation log only, restored). `jb-main` guards this with
   `&& roleId == AriaRoleId.Unknown`. This answers the vault note's open question on
   CMP-8619: in 1.12.0 the Switch does have a role, and it is the wrong one.
 - **Focus.** `document.activeElement` is the canvas throughout (CMP-10679), as expected. The
@@ -112,6 +113,13 @@ Restored and re-run clean before CONFORMANCE.md was generated.
 - Manual Orca pass: **not done this session.** It needs a desktop session with the screen
   reader running; recorded as pending, not as a pass.
 - Metric 1 counts to the first Compose render seen in a browser (08:07), not to the gate.
+  "Cold" means no Compose Multiplatform, skiko or Kotlin 2.4.10 wasm toolchain in the Gradle
+  cache; the machine already had a warm Gradle distribution, binaryen, a Node from the July
+  spike and the Playwright Chromium. The 0.81 GB adds the conformance `node_modules` (0.135 GB)
+  to the cache deltas (0.67 GB).
+- The Lane C citations in README.md and `tools/bundle-size.sh` point at
+  `~/coding/mp-lab/mp-lab-compose-mp/PLAN.md` (§5 item 6 for the Orca ruling, the `bundle.sh`
+  bullet for the `.wasm` glob), not at the vault's lab overview, which does not carry them.
 
 ## Would I pick this for real work
 

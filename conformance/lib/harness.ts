@@ -181,3 +181,17 @@ export function writeResult(result: ComponentResult): void {
   fs.mkdirSync(resultsDir, { recursive: true })
   fs.writeFileSync(path.join(resultsDir, `${result.component}.json`), JSON.stringify(result, null, 2))
 }
+
+/** A framework widget recorded on its own, with no port counterpart yet (Material3 controls). */
+export interface ControlResult {
+  control: string
+  route: string
+  recordedAt: string
+  steps: StepRecord[]
+}
+
+export function writeControlResult(result: ControlResult): void {
+  const dir = path.join(resultsDir, 'controls')
+  fs.mkdirSync(dir, { recursive: true })
+  fs.writeFileSync(path.join(dir, `${result.control.replace(/\W+/g, '-')}.json`), JSON.stringify(result, null, 2))
+}

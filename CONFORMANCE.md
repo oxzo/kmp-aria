@@ -18,6 +18,144 @@ No aggregate, no rank. "none" means nothing the reference exposed was missing at
 | Button | 1 | 3/3 | `disabled` (load, enter, space, click, focus) | roles: button; states: none at any step | `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled) | 1.12.0 |
 | ToggleButton | 1 | 3/3 | `pressed` (space, click) | roles: button; states: none at any step | `pressed`: framework (mirror writes no aria-pressed; M3 control also lacks pressed/checked/selected) | 1.12.0 |
 
+## Framework controls recorded without a port counterpart
+
+Material3 widgets on the same Compose build, recorded by `m3-controls.spec.ts` (load, Tab, Tab,
+Space, click). Roles, names and states are what the browser accessibility tree exposed at any
+step. A ladder row for the matching React Aria component replaces the entry here once ported.
+
+| Control | Route | Roles | Names | States | Text seen | CMP |
+|---|---|---|---|---|---|---|
+| M3 Button | `#/m3-button` | button | "Press me", "Disabled" | none at any step | "Pressed 0 times", "Pressed 1 times", "Pressed 2 times" | 1.12.0 |
+| M3 IconToggleButton | `#/m3-toggle-button` | button | "☆", "★" | none at any step | "Not selected", "Selected" | 1.12.0 |
+| M3 Switch | `#/m3-switch` | button | (no name) | none at any step | ""Off"", ""On"" | 1.12.0 |
+
+<details><summary>M3 Button snapshots (recorded 2026-09-02T05:37:14.359Z)</summary>
+
+
+**load**
+
+```yaml
+- button "Press me"
+- button "Disabled"
+- text: Pressed 0 times
+```
+
+**tab1**
+
+```yaml
+- button "Press me"
+- button "Disabled"
+- text: Pressed 0 times
+```
+
+**tab2**
+
+```yaml
+- button "Press me"
+- button "Disabled"
+- text: Pressed 0 times
+```
+
+**space**
+
+```yaml
+- button "Press me"
+- button "Disabled"
+- text: Pressed 1 times
+```
+
+**click**
+
+```yaml
+- button "Press me"
+- button "Disabled"
+- text: Pressed 2 times
+```
+
+</details>
+
+<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T05:37:08.200Z)</summary>
+
+
+**load**
+
+```yaml
+- button "☆"
+- text: Not selected
+```
+
+**tab1**
+
+```yaml
+- button "☆"
+- text: Not selected
+```
+
+**tab2**
+
+```yaml
+- button "☆"
+- text: Not selected
+```
+
+**space**
+
+```yaml
+- button "★"
+- text: Selected
+```
+
+**click**
+
+```yaml
+- button "☆"
+- text: Not selected
+```
+
+</details>
+
+<details><summary>M3 Switch snapshots (recorded 2026-09-02T05:37:02.040Z)</summary>
+
+
+**load**
+
+```yaml
+- button
+- text: "Off"
+```
+
+**tab1**
+
+```yaml
+- button
+- text: "Off"
+```
+
+**tab2**
+
+```yaml
+- button
+- text: "Off"
+```
+
+**space**
+
+```yaml
+- button
+- text: "On"
+```
+
+**click**
+
+```yaml
+- button
+- text: "Off"
+```
+
+</details>
+
+
 ## Per-step records
 
 ### Button

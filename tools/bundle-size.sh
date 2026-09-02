@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Metric 5: demo distribution size, raw and gzip -9, per file and total. Globs .wasm AND .js
-# (Lane C's warning: a .js-only glob misses the payload). Source maps excluded.
+# (Lane C's warning in ~/coding/mp-lab/mp-lab-compose-mp/PLAN.md: a .js-only glob misses the payload). Source maps excluded.
 # The reference app's Vite build is printed beside it, labelled apples-to-oranges: it is a
 # React bundle with two components, not a canvas renderer.
 set -euo pipefail
