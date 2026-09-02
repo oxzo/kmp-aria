@@ -1,0 +1,86 @@
+Starting a Gradle Daemon (subsequent builds will be faster)
+Calculating task graph as no cached configuration is available for tasks: :stately:jvmTest :stately:wasmJsTest
+
+> Configure project :aria
+w: file:///var/home/oxzo/coding/kmp-aria/aria/build.gradle.kts:33:36: 'runtime: String' is deprecated. Specify dependency directly
+w: file:///var/home/oxzo/coding/kmp-aria/aria/build.gradle.kts:34:36: 'foundation: String' is deprecated. Specify dependency directly
+w: file:///var/home/oxzo/coding/kmp-aria/aria/build.gradle.kts:35:36: 'ui: String' is deprecated. Specify dependency directly
+
+> Configure project :components
+w: file:///var/home/oxzo/coding/kmp-aria/components/build.gradle.kts:25:36: 'runtime: String' is deprecated. Specify dependency directly
+w: file:///var/home/oxzo/coding/kmp-aria/components/build.gradle.kts:26:36: 'foundation: String' is deprecated. Specify dependency directly
+w: file:///var/home/oxzo/coding/kmp-aria/components/build.gradle.kts:27:36: 'ui: String' is deprecated. Specify dependency directly
+
+> Task :kotlinWasmRestoreYarnLock SKIPPED
+> Task :stately:wasmJsProcessResources NO-SOURCE
+> Task :stately:jvmTestProcessResources NO-SOURCE
+> Task :stately:jvmProcessResources NO-SOURCE
+> Task :stately:wasmJsTestProcessResources NO-SOURCE
+> Task :stately:processJvmTestResources SKIPPED
+> Task :stately:processJvmMainResources SKIPPED
+> Task :stately:kmpPartiallyResolvedDependenciesChecker
+> Task :kotlinWasmKotlinNpmCachesSetup
+> Task :stately:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :stately:wasmJsPackageJson
+> Task :stately:wasmJsPublicPackageJson
+> Task :stately:wasmJsTestPackageJson
+> Task :stately:wasmJsTestPublicPackageJson
+> Task :aria:wasmJsPackageJson
+> Task :aria:wasmJsPublicPackageJson
+> Task :aria:wasmJsTestPackageJson
+> Task :aria:wasmJsTestPublicPackageJson
+> Task :components:wasmJsPackageJson
+> Task :components:wasmJsPublicPackageJson
+> Task :components:wasmJsTestPackageJson
+> Task :components:wasmJsTestPublicPackageJson
+> Task :kotlinWasmPackageJsonUmbrella
+> Task :wasmRootPackageJson
+> Task :kotlinWasmNodeJsSetup
+> Task :kotlinWasmYarnSetup
+> Task :stately:kotlinWasmNodeJsSetup
+
+> Task :kotlinWasmNpmInstall
+(node:67560) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+warning Ignored scripts due to flag.
+
+> Task :kotlinWasmStoreYarnLock
+> Task :stately:compileKotlinWasmJs
+> Task :stately:wasmJsMainClasses
+
+> Task :stately:compileKotlinJvm FAILED
+e: file:///var/home/oxzo/coding/kmp-aria/stately/src/commonMain/kotlin/dev/oxzo/aria/stately/ToggleState.kt:17:9 Platform declaration clash: The following declarations have the same JVM signature (setSelected(Z)V):
+    fun `<set-isSelected>`(`<set-?>`: Boolean): Unit defined in dev.oxzo.aria.stately.ToggleState
+    fun setSelected(value: Boolean): Unit defined in dev.oxzo.aria.stately.ToggleState
+e: file:///var/home/oxzo/coding/kmp-aria/stately/src/commonMain/kotlin/dev/oxzo/aria/stately/ToggleState.kt:19:5 Platform declaration clash: The following declarations have the same JVM signature (setSelected(Z)V):
+    fun `<set-isSelected>`(`<set-?>`: Boolean): Unit defined in dev.oxzo.aria.stately.ToggleState
+    fun setSelected(value: Boolean): Unit defined in dev.oxzo.aria.stately.ToggleState
+
+> Task :stately:compileTestKotlinWasmJs
+
+> Task :kotlinWasmToolingSetup
+warning Waiting for the other yarn instance to finish (67560)
+(node:67562) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+warning "webpack-dev-server > webpack-dev-middleware > memfs@4.56.10" has unmet peer dependency "tslib@2".
+warning Ignored scripts due to flag.
+
+[Incubating] Problems report is available at: file:///var/home/oxzo/coding/kmp-aria/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':stately:compileKotlinJvm'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 53s
+24 actionable tasks: 24 executed
+Configuration cache entry stored.
+EXIT=1

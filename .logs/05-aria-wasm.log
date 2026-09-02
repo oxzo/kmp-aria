@@ -1,0 +1,80 @@
+Calculating task graph as no cached configuration is available for tasks: :aria:wasmJsBrowserTest
+> Task :aria:generateExpectResourceCollectorsForCommonMain SKIPPED
+> Task :aria:generateComposeResClass SKIPPED
+> Task :aria:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :stately:kmpPartiallyResolvedDependenciesChecker
+> Task :aria:convertXmlValueResourcesForWasmJsMain NO-SOURCE
+> Task :aria:kmpPartiallyResolvedDependenciesChecker
+> Task :kotlinWasmRestoreYarnLock UP-TO-DATE
+> Task :aria:checkComposeUiTestConfigurationForWasmJs
+> Task :stately:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :aria:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :aria:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :kotlinWasmKotlinNpmCachesSetup
+> Task :aria:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :aria:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :aria:convertXmlValueResourcesForWebMain NO-SOURCE
+> Task :aria:convertXmlValueResourcesForWebTest NO-SOURCE
+> Task :aria:convertXmlValueResourcesForWasmJsTest NO-SOURCE
+> Task :aria:checkWasmJsMainComposeLibrariesCompatibility
+> Task :aria:checkWasmJsTestComposeLibrariesCompatibility
+> Task :aria:copyNonXmlValueResourcesForWebMain NO-SOURCE
+> Task :aria:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :aria:copyNonXmlValueResourcesForWasmJsMain NO-SOURCE
+> Task :aria:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :aria:copyNonXmlValueResourcesForWasmJsTest NO-SOURCE
+> Task :aria:copyNonXmlValueResourcesForWebTest NO-SOURCE
+> Task :aria:generateResourceAccessorsForCommonMain SKIPPED
+> Task :aria:generateResourceAccessorsForCommonTest SKIPPED
+> Task :aria:prepareComposeResourcesTaskForWebMain NO-SOURCE
+> Task :aria:generateResourceAccessorsForWebMain SKIPPED
+> Task :aria:prepareComposeResourcesTaskForWasmJsMain NO-SOURCE
+> Task :aria:prepareComposeResourcesTaskForWebTest NO-SOURCE
+> Task :stately:wasmJsPackageJson UP-TO-DATE
+> Task :aria:wasmJsResolveResourcesFromDependencies
+> Task :aria:prepareComposeResourcesTaskForWasmJsTest NO-SOURCE
+> Task :aria:generateResourceAccessorsForWasmJsMain SKIPPED
+> Task :aria:generateResourceAccessorsForWasmJsTest SKIPPED
+> Task :aria:generateActualResourceCollectorsForWasmJsMain SKIPPED
+> Task :aria:generateResourceAccessorsForWebTest SKIPPED
+> Task :stately:wasmJsTestPackageJson UP-TO-DATE
+> Task :stately:wasmJsPublicPackageJson UP-TO-DATE
+> Task :stately:wasmJsTestPublicPackageJson UP-TO-DATE
+> Task :aria:wasmJsPackageJson UP-TO-DATE
+> Task :stately:compileKotlinWasmJs UP-TO-DATE
+> Task :aria:wasmJsPublicPackageJson UP-TO-DATE
+> Task :aria:wasmJsTestPackageJson UP-TO-DATE
+> Task :aria:assembleWasmJsTestResources
+> Task :aria:assembleWasmJsMainResources
+> Task :aria:wasmJsTestPublicPackageJson UP-TO-DATE
+> Task :aria:wasmJsTestProcessResources
+> Task :aria:wasmJsResolveSelfResourcesCopyHierarchicalMultiplatformResources
+> Task :aria:wasmJsAggregateResources
+> Task :kotlinWasmNodeJsSetup UP-TO-DATE
+> Task :components:wasmJsPackageJson UP-TO-DATE
+> Task :kotlinWasmYarnSetup UP-TO-DATE
+> Task :aria:wasmJsProcessResources
+> Task :components:wasmJsTestPackageJson UP-TO-DATE
+> Task :components:wasmJsPublicPackageJson UP-TO-DATE
+> Task :components:wasmJsTestPublicPackageJson UP-TO-DATE
+> Task :kotlinWasmPackageJsonUmbrella UP-TO-DATE
+> Task :wasmRootPackageJson UP-TO-DATE
+> Task :kotlinWasmNpmInstall UP-TO-DATE
+> Task :kotlinWasmStoreYarnLock UP-TO-DATE
+> Task :aria:unpackSkikoWasmRuntime
+> Task :aria:processSkikoRuntimeForKWasm
+> Task :kotlinWasmToolingSetup UP-TO-DATE
+> Task :aria:kotlinWasmNodeJsSetup
+> Task :aria:compileKotlinWasmJs
+> Task :aria:wasmJsMainClasses
+> Task :aria:compileTestKotlinWasmJs
+> Task :aria:wasmJsTestClasses
+> Task :aria:compileTestDevelopmentExecutableKotlinWasmJs
+> Task :aria:wasmJsTestTestDevelopmentExecutableCompileSync
+
+> Task :aria:wasmJsBrowserTest
+
+BUILD SUCCESSFUL in 15s
+41 actionable tasks: 21 executed, 20 up-to-date
+Configuration cache entry stored.
+EXIT=0
