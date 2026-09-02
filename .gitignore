@@ -24,3 +24,4 @@ conformance/reference/dist/
 
 # Local-only handoff / scratch notes — durable on disk, never committed
 *.local.md
+.logs/

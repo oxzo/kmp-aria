@@ -109,4 +109,18 @@ node conformance/report.js > CONFORMANCE.md
 
 ## Status
 
-Session 1 (2026-09-02): scaffold. See PREDICTION.md, NOTES.md, CONFORMANCE.md.
+**Session 1 (2026-09-02): gate met.** Button and ToggleButton rows in CONFORMANCE.md are
+script-generated; the ToggleButton row shows `pressed` missing on Compose and present on the
+reference; both instruments were seen red under mutation before the rows were generated.
+
+Measured on Compose Multiplatform 1.12.0 (see NOTES.md for mechanism and source lines):
+
+- `pressed` and `disabled` do not reach the browser; both attributed to the framework, the
+  second version-bound (written on `jb-main`, absent from the shipped 1.12.0).
+- 1.12.0 overrides any explicit role with `button` on clickable nodes, so Checkbox, Switch,
+  RadioButton and Tab roles cannot reach the browser in this version.
+- Setup 12 minutes and 0.81 GB cold; browser test loop 15 s; edit-to-visible 7.1 s; demo
+  bundle 4.13 MB gzipped (3.33 MB of it skiko).
+
+Not done: the manual Orca pass. Next: Checkbox, Switch, RadioGroup, TextField (Tier 1 in
+ladder order), each with UI tests, a spec, and a row.

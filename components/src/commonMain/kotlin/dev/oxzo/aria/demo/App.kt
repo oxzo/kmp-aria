@@ -8,14 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -111,7 +107,10 @@ private fun ToggleButtonDemo() {
 @Composable
 private fun M3ButtonDemo() {
     var count by remember { mutableStateOf(0) }
-    Button(onClick = { count++ }, modifier = Modifier.testTag("btn")) { Text("Press me") }
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Button(onClick = { count++ }, modifier = Modifier.testTag("btn")) { Text("Press me") }
+        Button(onClick = { count++ }, enabled = false, modifier = Modifier.testTag("btn-disabled")) { Text("Disabled") }
+    }
     Text("Pressed $count times", modifier = Modifier.testTag("count"))
 }
 
@@ -126,10 +125,7 @@ private fun M3SwitchDemo() {
 private fun M3ToggleButtonDemo() {
     var checked by remember { mutableStateOf(false) }
     IconToggleButton(checked = checked, onCheckedChange = { checked = it }, modifier = Modifier.testTag("tb")) {
-        Icon(
-            imageVector = if (checked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-            contentDescription = "Favorite",
-        )
+        Text(if (checked) "\u2605" else "\u2606")
     }
     Text(if (checked) "Selected" else "Not selected", modifier = Modifier.testTag("state"))
 }

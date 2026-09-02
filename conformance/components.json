@@ -1,0 +1,18 @@
+[
+  {
+    "component": "Button",
+    "tier": 1,
+    "route": "/button",
+    "m3Route": "/m3-button",
+    "testClass": "dev.oxzo.aria.ButtonTest",
+    "reference": "https://react-aria.adobe.com/Button"
+  },
+  {
+    "component": "ToggleButton",
+    "tier": 1,
+    "route": "/toggle-button",
+    "m3Route": "/m3-toggle-button",
+    "testClass": "dev.oxzo.aria.ToggleButtonTest",
+    "reference": "https://react-aria.adobe.com/ToggleButton"
+  }
+]
