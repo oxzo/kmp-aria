@@ -32,6 +32,8 @@ export interface ComponentEntry {
   tier: number
   route: string
   m3Route?: string
+  /** When the control route is not a Material3 widget, what it is instead. */
+  controlNote?: string
   testClass: string
   reference: string
 }

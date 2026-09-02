@@ -27,6 +27,9 @@ field's value is invisible to the instrument although the mirror node carries it
 | Switch | 1 | 5/5 | `role switch→button "Wi-Fi"` (load, space, enter, click, focus); `checked` (space, enter) | roles: button (a nameless one among them); states: none at any step | `role switch→button "Wi-Fi"`: framework (mirror never writes role=switch; M3 control also lacks role switch); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected) | 1.12.0 |
 | RadioGroup | 1 | 9/9 | `radiogroup "Favorite pet"` (load, space, down, enter, click, tab-out, focus); `role radio→button "Dog"` (load, space, down, enter, click, tab-out, focus); `role radio→button "Cat"` (load, space, down, enter, click, tab-out, focus); `role radio→button "Dragon"` (load, space, down, enter, click, tab-out, focus); `checked` (space, down, enter, click, tab-out) | roles: button (a nameless one among them); states: none at any step | `radiogroup "Favorite pet"`: framework (mirror never writes role=radiogroup; M3 control also lacks role radiogroup); `role radio→button "Dog"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Cat"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Dragon"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected) | 1.12.0 |
 | TextField | 1 | 6/6 | none | roles: textbox (a nameless one among them); states: none at any step | — | 1.12.0 |
+| Link | 1 | 6/6 | `role link→button "Follow me"` (load, enter, space, click, tab-next, focus); `role link→button "Docs"` (load, enter, space, click, tab-next, focus); `href` (load, enter, space, click, tab-next, focus); `role link→button "Disabled"` (load, enter, space, click, tab-next, focus); `disabled` (load, enter, space, click, tab-next, focus) | roles: button (a nameless one among them); states: none at any step | `role link→button "Follow me"`: framework (mirror never writes role=link; M3 control also lacks role link); `role link→button "Docs"`: framework (mirror never writes role=link; M3 control also lacks role link); `href`: framework (mirror nodes are div elements, no anchor and no href; M3 control also lacks href); `role link→button "Disabled"`: framework (mirror never writes role=link; M3 control also lacks role link); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled) | 1.12.0 |
+| ProgressBar | 1 | 6/6 | `progressbar "Loading"` (load, enter, click, focus); `progressbar "Syncing"` (load, enter, click, focus) | roles: button; states: none at any step | `progressbar "Loading"`: framework (mirror never writes role=progressbar; M3 control also lacks role progressbar); `progressbar "Syncing"`: framework (mirror never writes role=progressbar; M3 control also lacks role progressbar) | 1.12.0 |
+| Disclosure | 1 | 7/7 | `level` (load, enter, space, click, focus); `expanded` (enter, click); `group "System Requirements"` (enter, click) | no M3 control | `level`: framework (mirror writes no aria-level); `expanded`: framework (mirror writes no aria-expanded); `group "System Requirements"`: unattributed (mirror never writes role=group) | 1.12.0 |
 
 ## Framework controls recorded without a port counterpart
 
@@ -39,7 +42,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 | M3 Button | `#/m3-button` | button | "Press me", "Disabled" | none at any step | "Pressed 0 times", "Pressed 1 times", "Pressed 2 times" | 1.12.0 |
 | M3 IconToggleButton | `#/m3-toggle-button` | button | "☆", "★" | none at any step | "Not selected", "Selected" | 1.12.0 |
 
-<details><summary>M3 Button snapshots (recorded 2026-09-02T08:18:53.615Z)</summary>
+<details><summary>M3 Button snapshots (recorded 2026-09-02T09:05:02.746Z)</summary>
 
 
 **load**
@@ -84,7 +87,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 </details>
 
-<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T08:18:47.462Z)</summary>
+<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T09:04:56.592Z)</summary>
 
 
 **load**
@@ -129,7 +132,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 ### Button
 
-Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T08:18:20.410Z
+Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T09:03:51.529Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -286,7 +289,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### ToggleButton
 
-Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T08:20:28.015Z
+Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T09:06:54.361Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -426,7 +429,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Checkbox
 
-Reference: https://react-aria.adobe.com/Checkbox · route `#/checkbox` · M3 control `#/m3-checkbox` · recorded 2026-09-02T08:18:41.311Z
+Reference: https://react-aria.adobe.com/Checkbox · route `#/checkbox` · M3 control `#/m3-checkbox` · recorded 2026-09-02T09:04:12.417Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -603,7 +606,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Switch
 
-Reference: https://react-aria.adobe.com/Switch · route `#/switch` · M3 control `#/m3-switch` · recorded 2026-09-02T08:19:42.644Z
+Reference: https://react-aria.adobe.com/Switch · route `#/switch` · M3 control `#/m3-switch` · recorded 2026-09-02T09:06:09.001Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -748,7 +751,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### RadioGroup
 
-Reference: https://react-aria.adobe.com/RadioGroup · route `#/radio-group` · M3 control `#/m3-radio` · recorded 2026-09-02T08:19:21.757Z
+Reference: https://react-aria.adobe.com/RadioGroup · route `#/radio-group` · M3 control `#/m3-radio` · recorded 2026-09-02T09:05:48.132Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1043,7 +1046,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### TextField
 
-Reference: https://react-aria.adobe.com/TextField · route `#/text-field` · M3 control `#/m3-text-field` · recorded 2026-09-02T08:20:07.146Z
+Reference: https://react-aria.adobe.com/TextField · route `#/text-field` · M3 control `#/m3-text-field` · recorded 2026-09-02T09:06:33.497Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1247,6 +1250,451 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 - textbox
 - text: "Value: Ada hunter2"
 - textbox: Ada hunter2
+```
+
+</details>
+
+### Link
+
+Reference: https://react-aria.adobe.com/Link · route `#/link` · M3 control `#/fw-link` (Material3 has no link widget; the control is foundation's own link path, a LinkAnnotation.Clickable inside BasicText) · recorded 2026-09-02T09:04:50.443Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- link "Follow me"
+- link "Docs":
+  - /url: https://react-aria.adobe.com/Link
+- link "Disabled" [disabled]
+- paragraph: Followed 0 times
+```
+
+**tab1** (focused: Follow me)
+
+```yaml
+- link "Follow me"
+- link "Docs":
+  - /url: https://react-aria.adobe.com/Link
+- link "Disabled" [disabled]
+- paragraph: Followed 0 times
+```
+
+**enter** (focused: Follow me)
+
+```yaml
+- link "Follow me"
+- link "Docs":
+  - /url: https://react-aria.adobe.com/Link
+- link "Disabled" [disabled]
+- paragraph: Followed 1 times
+```
+
+**space** (focused: Follow me)
+
+```yaml
+- link "Follow me"
+- link "Docs":
+  - /url: https://react-aria.adobe.com/Link
+- link "Disabled" [disabled]
+- paragraph: Followed 1 times
+```
+
+**click** (focused: Follow me)
+
+```yaml
+- link "Follow me"
+- link "Docs":
+  - /url: https://react-aria.adobe.com/Link
+- link "Disabled" [disabled]
+- paragraph: Followed 2 times
+```
+
+**tab-next** (focused: Docs)
+
+```yaml
+- link "Follow me"
+- link "Docs":
+  - /url: https://react-aria.adobe.com/Link
+- link "Disabled" [disabled]
+- paragraph: Followed 2 times
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button "Follow me"
+- button "Docs"
+- button "Disabled"
+- text: Followed 0 times
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button "Follow me"
+- button "Docs"
+- button "Disabled"
+- text: Followed 0 times
+```
+
+**tab2** (focused: Follow me)
+
+```yaml
+- button "Follow me (focused)": Follow me
+- button "Docs"
+- button "Disabled"
+- text: Followed 0 times
+```
+
+**enter** (focused: Follow me)
+
+```yaml
+- button "Follow me (focused)": Follow me
+- button "Docs"
+- button "Disabled"
+- text: Followed 1 times
+```
+
+**space** (focused: Follow me)
+
+```yaml
+- button "Follow me (focused)": Follow me
+- button "Docs"
+- button "Disabled"
+- text: Followed 1 times
+```
+
+**click** (focused: Follow me)
+
+```yaml
+- button "Follow me (focused)": Follow me
+- button "Docs"
+- button "Disabled"
+- text: Followed 2 times
+```
+
+**tab-next** (focused: Docs)
+
+```yaml
+- button "Follow me"
+- button "Docs (focused)": Docs
+- button "Disabled"
+- text: Followed 2 times
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Follow me
+- button
+- text: Followed 0 times
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Follow me
+- button
+- text: Followed 0 times
+```
+
+**tab2** (focused: none)
+
+```yaml
+- text: Follow me
+- button
+- text: Followed 0 times
+```
+
+**enter** (focused: none)
+
+```yaml
+- text: Follow me
+- button
+- text: Followed 1 times
+```
+
+**space** (focused: none)
+
+```yaml
+- text: Follow me
+- button
+- text: Followed 2 times
+```
+
+**click** (focused: none)
+
+```yaml
+- text: Follow me
+- button
+- text: Followed 3 times
+```
+
+**tab-next** (focused: none)
+
+```yaml
+- text: Follow me
+- button
+- text: Followed 3 times
+```
+
+</details>
+
+### ProgressBar
+
+Reference: https://react-aria.adobe.com/ProgressBar · route `#/progress-bar` · M3 control `#/m3-progress-bar` · recorded 2026-09-02T09:05:20.008Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- progressbar "Loading": Loading 30%
+- button "Advance"
+- progressbar "Syncing"
+- paragraph: "Value: 30"
+```
+
+**tab1** (focused: Advance)
+
+```yaml
+- progressbar "Loading": Loading 30%
+- button "Advance"
+- progressbar "Syncing"
+- paragraph: "Value: 30"
+```
+
+**enter** (focused: Advance)
+
+```yaml
+- progressbar "Loading": Loading 60%
+- button "Advance"
+- progressbar "Syncing"
+- paragraph: "Value: 60"
+```
+
+**click** (focused: Advance)
+
+```yaml
+- progressbar "Loading": Loading 90%
+- button "Advance"
+- progressbar "Syncing"
+- paragraph: "Value: 90"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Loading 30%
+- button "Advance"
+- text: "Syncing Value: 30"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Loading 30%
+- button "Advance"
+- text: "Syncing Value: 30"
+```
+
+**tab2** (focused: Advance)
+
+```yaml
+- text: Loading 30%
+- button "Advance (focused)": Advance
+- text: "Syncing Value: 30"
+```
+
+**enter** (focused: Advance)
+
+```yaml
+- text: Loading 60%
+- button "Advance (focused)": Advance
+- text: "Syncing Value: 60"
+```
+
+**click** (focused: Advance)
+
+```yaml
+- text: Loading 90%
+- button "Advance (focused)": Advance
+- text: "Syncing Value: 90"
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Loading
+- button "Advance"
+- text: "Value: 30"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Loading
+- button "Advance"
+- text: "Value: 30"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- text: Loading
+- button "Advance"
+- text: "Value: 30"
+```
+
+**enter** (focused: none)
+
+```yaml
+- text: Loading
+- button "Advance"
+- text: "Value: 60"
+```
+
+**click** (focused: none)
+
+```yaml
+- text: Loading
+- button "Advance"
+- text: "Value: 90"
+```
+
+</details>
+
+### Disclosure
+
+Reference: https://react-aria.adobe.com/Disclosure · route `#/disclosure` · recorded 2026-09-02T09:04:25.941Z
+
+Tabs until the widget reported focus: reference 1, compose 2 (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- heading "System Requirements" [level=3]:
+  - button "System Requirements"
+- paragraph: Collapsed
+```
+
+**tab1** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements" [level=3]:
+  - button "System Requirements"
+- paragraph: Collapsed
+```
+
+**enter** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements" [level=3]:
+  - button "System Requirements" [expanded]
+- group "System Requirements":
+  - paragraph: Details about system requirements here.
+- paragraph: Expanded
+```
+
+**space** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements" [level=3]:
+  - button "System Requirements"
+- paragraph: Collapsed
+```
+
+**click** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements" [level=3]:
+  - button "System Requirements" [expanded]
+- group "System Requirements":
+  - paragraph: Details about system requirements here.
+- paragraph: Expanded
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- heading "System Requirements":
+  - button "System Requirements"
+- text: Collapsed
+```
+
+**tab1** (focused: none)
+
+```yaml
+- heading "System Requirements":
+  - button "System Requirements"
+- text: Collapsed
+```
+
+**tab2** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements (focused)":
+  - button "System Requirements (focused)": System Requirements
+- text: Collapsed
+```
+
+**enter** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements (focused)":
+  - button "System Requirements (focused)": System Requirements
+- text: Details about system requirements here. Expanded
+```
+
+**space** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements (focused)":
+  - button "System Requirements (focused)": System Requirements
+- text: Collapsed
+```
+
+**click** (focused: System Requirements)
+
+```yaml
+- heading "System Requirements (focused)":
+  - button "System Requirements (focused)": System Requirements
+- text: Details about system requirements here. Expanded
 ```
 
 </details>

@@ -99,3 +99,13 @@ fun Modifier.ariaCheckable(
 internal fun Modifier.spaceOnlyActivation(): Modifier = this.onPreviewKeyEvent {
     it.key == Key.Enter || it.key == Key.NumPadEnter
 }
+
+/**
+ * The mirror image for links: consumes Space (down and up) before the clickable primitive sees
+ * it, so only Enter activates. react-aria's `usePress` (`isValidKeyboardEvent`: "Links should
+ * only trigger with Enter key") applies this to `role="link"` and to anchors; on a native `<a>`
+ * Space scrolls the page. Place before the primitive in the chain.
+ */
+internal fun Modifier.enterOnlyActivation(): Modifier = this.onPreviewKeyEvent {
+    it.key == Key.Spacebar
+}

@@ -5,9 +5,34 @@
  */
 import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Button, Checkbox, Input, Label, Radio, RadioGroup, Switch, TextField, ToggleButton } from 'react-aria-components'
+import {
+  Button,
+  Checkbox,
+  Disclosure,
+  DisclosurePanel,
+  Heading,
+  Input,
+  Label,
+  Link,
+  ProgressBar,
+  Radio,
+  RadioGroup,
+  Switch,
+  TextField,
+  ToggleButton,
+} from 'react-aria-components'
 
-const routes = ['/button', '/toggle-button', '/checkbox', '/switch', '/radio-group', '/text-field']
+const routes = [
+  '/button',
+  '/toggle-button',
+  '/checkbox',
+  '/switch',
+  '/radio-group',
+  '/text-field',
+  '/link',
+  '/progress-bar',
+  '/disclosure',
+]
 
 function useHash(): string {
   const [hash, setHash] = useState(window.location.hash)
@@ -130,6 +155,75 @@ function TextFieldDemo() {
   )
 }
 
+function LinkDemo() {
+  const [count, setCount] = useState(0)
+  return (
+    <>
+      <div style={{ display: 'flex', gap: 12 }}>
+        <Link data-testid="lnk" onPress={() => setCount((c) => c + 1)}>
+          Follow me
+        </Link>
+        <Link data-testid="lnk-href" href="https://react-aria.adobe.com/Link" target="_blank">
+          Docs
+        </Link>
+        <Link data-testid="lnk-disabled" isDisabled onPress={() => setCount((c) => c + 1)}>
+          Disabled
+        </Link>
+      </div>
+      <p data-testid="count">Followed {count} times</p>
+    </>
+  )
+}
+
+const track = { width: 200, height: 12, border: '1px solid black' }
+
+function ProgressBarDemo() {
+  const [value, setValue] = useState(30)
+  return (
+    <>
+      <ProgressBar data-testid="pb" value={value}>
+        {({ percentage, valueText }) => (
+          <>
+            <Label>Loading</Label> <span className="value">{valueText}</span>
+            <div style={track}>
+              <div style={{ width: `${percentage}%`, height: '100%', background: 'black' }} />
+            </div>
+          </>
+        )}
+      </ProgressBar>
+      <Button data-testid="adv" onPress={() => setValue((v) => Math.min(100, v + 30))}>
+        Advance
+      </Button>
+      <ProgressBar data-testid="pb-ind" isIndeterminate>
+        <Label>Syncing</Label>
+        <div style={track}>
+          <div style={{ width: '40%', height: '100%', background: 'black' }} />
+        </div>
+      </ProgressBar>
+      <p data-testid="state">Value: {value}</p>
+    </>
+  )
+}
+
+function DisclosureDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Disclosure data-testid="disc" isExpanded={open} onExpandedChange={setOpen}>
+        <Heading>
+          <Button slot="trigger" data-testid="trig">
+            System Requirements
+          </Button>
+        </Heading>
+        <DisclosurePanel data-testid="panel">
+          <p>Details about system requirements here.</p>
+        </DisclosurePanel>
+      </Disclosure>
+      <p data-testid="state">{open ? 'Expanded' : 'Collapsed'}</p>
+    </>
+  )
+}
+
 function App() {
   const route = useHash().replace(/^#/, '')
   switch (route) {
@@ -145,6 +239,12 @@ function App() {
       return <RadioGroupDemo />
     case '/text-field':
       return <TextFieldDemo />
+    case '/link':
+      return <LinkDemo />
+    case '/progress-bar':
+      return <ProgressBarDemo />
+    case '/disclosure':
+      return <DisclosureDemo />
     default:
       return <Index />
   }

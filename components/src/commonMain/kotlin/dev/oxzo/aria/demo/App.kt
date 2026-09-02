@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
@@ -32,11 +33,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.oxzo.aria.AriaButton
 import dev.oxzo.aria.AriaCheckbox
+import dev.oxzo.aria.AriaDisclosure
+import dev.oxzo.aria.AriaLink
+import dev.oxzo.aria.AriaProgressBar
 import dev.oxzo.aria.AriaRadio
 import dev.oxzo.aria.AriaRadioGroup
 import dev.oxzo.aria.AriaRadioGroupScope
@@ -59,12 +69,17 @@ val demoRoutes: List<String> = listOf(
     "/switch",
     "/radio-group",
     "/text-field",
+    "/link",
+    "/progress-bar",
+    "/disclosure",
     "/m3-button",
     "/m3-toggle-button",
     "/m3-checkbox",
     "/m3-switch",
     "/m3-radio",
     "/m3-text-field",
+    "/fw-link",
+    "/m3-progress-bar",
 )
 
 @Composable
@@ -82,6 +97,11 @@ fun App(route: String) {
                 "/switch" -> SwitchDemo()
                 "/radio-group" -> RadioGroupDemo()
                 "/text-field" -> TextFieldDemo()
+                "/link" -> LinkDemo()
+                "/progress-bar" -> ProgressBarDemo()
+                "/disclosure" -> DisclosureDemo()
+                "/fw-link" -> FoundationLinkDemo()
+                "/m3-progress-bar" -> M3ProgressBarDemo()
                 "/m3-button" -> M3ButtonDemo()
                 "/m3-checkbox" -> M3CheckboxDemo()
                 "/m3-radio" -> M3RadioDemo()
@@ -271,6 +291,102 @@ private fun TextFieldDemo() {
         textStyle = label,
     )
     BasicText("Value: $name", modifier = Modifier.testTag("state"), style = label)
+}
+
+private val linkStyle = label.copy(textDecoration = TextDecoration.Underline)
+
+@Composable
+private fun LinkDemo() {
+    var count by remember { mutableStateOf(0) }
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        AriaLink(onPress = { count++ }, modifier = Modifier.testTag("lnk").focusMarker("Follow me")) {
+            BasicText("Follow me", style = linkStyle)
+        }
+        AriaLink(href = "https://react-aria.adobe.com/Link", modifier = Modifier.testTag("lnk-href").focusMarker("Docs")) {
+            BasicText("Docs", style = linkStyle)
+        }
+        AriaLink(onPress = { count++ }, enabled = false, modifier = Modifier.testTag("lnk-disabled")) {
+            BasicText("Disabled", style = label.copy(color = Color.Gray))
+        }
+    }
+    BasicText("Followed $count times", modifier = Modifier.testTag("count"), style = label)
+}
+
+/**
+ * Framework control for Link: Material3 has no link widget, so the control is the framework's
+ * own link mechanism, a `LinkAnnotation.Clickable` inside `BasicText` (foundation, not
+ * Material3). It is what `jb-main`'s `LinkTestMarker` → `role="link"` mapping applies to.
+ */
+@Composable
+private fun FoundationLinkDemo() {
+    var count by remember { mutableStateOf(0) }
+    val text = buildAnnotatedString {
+        withLink(
+            LinkAnnotation.Clickable(
+                tag = "follow",
+                styles = TextLinkStyles(SpanStyle(textDecoration = TextDecoration.Underline)),
+                linkInteractionListener = { count++ },
+            ),
+        ) {
+            append("Follow me")
+        }
+    }
+    BasicText(text, modifier = Modifier.testTag("lnk"), style = label)
+    BasicText("Followed $count times", modifier = Modifier.testTag("count"), style = label)
+}
+
+@Composable
+private fun ProgressBarDemo() {
+    var value by remember { mutableStateOf(30f) }
+    AriaProgressBar(value = value, label = "Loading", modifier = Modifier.testTag("pb"), labelStyle = label) { percentage, _ ->
+        Track(percentage)
+    }
+    AriaButton(
+        onPress = { value = (value + 30f).coerceAtMost(100f) },
+        modifier = Modifier.testTag("adv").focusMarker("Advance").border(1.dp, Color.Black),
+    ) {
+        BasicText("Advance", modifier = Modifier.padding(8.dp), style = label)
+    }
+    AriaProgressBar(value = 0f, label = "Syncing", modifier = Modifier.testTag("pb-ind"), isIndeterminate = true, labelStyle = label) { percentage, _ ->
+        Track(percentage)
+    }
+    BasicText("Value: ${value.toInt()}", modifier = Modifier.testTag("state"), style = label)
+}
+
+/** Drawn track; an indeterminate bar (null percentage) shows a fixed 40 % segment. */
+@Composable
+private fun Track(percentage: Float?) {
+    Box(
+        Modifier.size(200.dp, 12.dp).border(1.dp, Color.Black).drawBehind {
+            val fill = (percentage ?: 40f) / 100f
+            drawRect(Color.Black, size = Size(size.width * fill, size.height))
+        },
+    )
+}
+
+@Composable
+private fun DisclosureDemo() {
+    var open by remember { mutableStateOf(false) }
+    AriaDisclosure(
+        isExpanded = open,
+        onExpandedChange = { open = it },
+        modifier = Modifier.testTag("disc"),
+        triggerModifier = Modifier.testTag("trig").focusMarker("System Requirements").border(1.dp, Color.Black),
+        panelModifier = Modifier.testTag("panel").padding(8.dp),
+        trigger = { BasicText("System Requirements", modifier = Modifier.padding(8.dp), style = label) },
+    ) {
+        BasicText("Details about system requirements here.", style = label)
+    }
+    BasicText(if (open) "Expanded" else "Collapsed", modifier = Modifier.testTag("state"), style = label)
+}
+
+@Composable
+private fun M3ProgressBarDemo() {
+    var value by remember { mutableStateOf(30f) }
+    Text("Loading")
+    LinearProgressIndicator(progress = { value / 100f }, modifier = Modifier.testTag("pb"))
+    Button(onClick = { value = (value + 30f).coerceAtMost(100f) }, modifier = Modifier.testTag("adv")) { Text("Advance") }
+    Text("Value: ${value.toInt()}", modifier = Modifier.testTag("state"))
 }
 
 @Composable

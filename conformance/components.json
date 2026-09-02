@@ -46,5 +46,29 @@
     "m3Route": "/m3-text-field",
     "testClass": "dev.oxzo.aria.TextFieldTest",
     "reference": "https://react-aria.adobe.com/TextField"
+  },
+  {
+    "component": "Link",
+    "tier": 1,
+    "route": "/link",
+    "m3Route": "/fw-link",
+    "controlNote": "Material3 has no link widget; the control is foundation's own link path, a LinkAnnotation.Clickable inside BasicText",
+    "testClass": "dev.oxzo.aria.LinkTest",
+    "reference": "https://react-aria.adobe.com/Link"
+  },
+  {
+    "component": "ProgressBar",
+    "tier": 1,
+    "route": "/progress-bar",
+    "m3Route": "/m3-progress-bar",
+    "testClass": "dev.oxzo.aria.ProgressBarTest",
+    "reference": "https://react-aria.adobe.com/ProgressBar"
+  },
+  {
+    "component": "Disclosure",
+    "tier": 1,
+    "route": "/disclosure",
+    "testClass": "dev.oxzo.aria.DisclosureTest",
+    "reference": "https://react-aria.adobe.com/Disclosure"
   }
 ]

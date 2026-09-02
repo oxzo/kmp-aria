@@ -40,11 +40,22 @@ const cmpVersion = (() => {
   return m ? m[1] : 'unknown'
 })()
 
+/** Playwright quotes a string that contains a colon (`paragraph: "Value: 30"`); strip that. */
+const unquote = (s) => (s && /^"(?:[^"\\]|\\.)*"$/.test(s) ? s.slice(1, -1).replace(/\\(.)/g, '$1') : s)
+
 function parseSnapshot(text) {
   const entries = []
   for (const raw of text.split('\n')) {
     const line = raw.trim()
     if (!line.startsWith('- ')) continue
+    // A property line under a widget (`- /url: https://…` under a link) is that widget's
+    // attribute; a link's destination is diffed as `href`.
+    const prop = line.match(/^- \/([a-z]+): (.*)$/)
+    if (prop) {
+      const last = entries[entries.length - 1]
+      if (last) last.attrs.push(prop[1] === 'url' ? 'href' : prop[1])
+      continue
+    }
     const m = line.match(/^- ([a-z]+)(?: "((?:[^"\\]|\\.)*)")?(?: \[([^\]]*)\])?(?::\s*(.*))?$/)
     if (!m) { entries.push({ role: 'unparsed', name: line, attrs: [], text: null }); continue }
     const [, role, name, attrs, text] = m
@@ -52,7 +63,7 @@ function parseSnapshot(text) {
       role,
       name: name ? name.replace(/ \(focused\)$/, '') : null,
       attrs: attrs ? attrs.split(',').map((a) => a.trim().split('=')[0]) : [],
-      text: text ?? null,
+      text: text ? unquote(text.trim()) : null,
     })
   }
   return entries
@@ -117,11 +128,21 @@ function diffTarget(ref, target) {
     const re = parseSnapshot(rs.snapshot)
     const te = parseSnapshot(ts.snapshot)
     const tw = widgets(te)
-    for (const w of widgets(re)) {
-      const same = tw.find((t) => t.role === w.role && t.name === w.name)
-      const byName = same ?? tw.find((t) => t.name === w.name)
+    const rw = widgets(re)
+    // Exact role+name matches are claimed first, so a same-named widget of another role (a
+    // heading labelled by its button, a group labelled by its trigger) cannot pose as a role
+    // change of a widget that is simply absent. Each target widget is matched at most once.
+    const consumed = new Set()
+    const exact = new Map()
+    for (const w of rw) {
+      const t = tw.find((x) => !consumed.has(x) && x.role === w.role && x.name === w.name)
+      if (t) { exact.set(w, t); consumed.add(t) }
+    }
+    for (const w of rw) {
+      const same = exact.get(w)
+      const byName = same ?? tw.find((t) => !consumed.has(t) && t.name === w.name)
       if (!byName) { note(`${w.role} "${w.name}"`, step); continue }
-      if (!same) note(`role ${w.role}→${byName.role} "${w.name}"`, step)
+      if (!same) { note(`role ${w.role}→${byName.role} "${w.name}"`, step); consumed.add(byName) }
       for (const a of w.attrs) if (!byName.attrs.includes(a)) note(a, step)
     }
     // The reference renders a label as both the widget's name and a text node; a target that
@@ -175,6 +196,13 @@ function attribute(key, compose, m3) {
     return `${framework ? 'framework' : m3 ? 'port' : 'unattributed'} (${parts.join('; ')})`
   }
   const parts = []
+  if (attr === 'href') {
+    // A destination is not an aria-* state: mirror nodes are <div>s, so no node can carry one.
+    parts.push('mirror nodes are div elements, no anchor and no href')
+    if (m3) parts.push(snapshotsHaveAny(m3, ['href']) ? 'M3 control exposes href' : 'M3 control also lacks href')
+    const framework = compose && (!m3 || !snapshotsHaveAny(m3, ['href']))
+    return `${framework ? 'framework' : m3 ? 'port' : 'unattributed'} (${parts.join('; ')})`
+  }
   if (compose && !mirrorHas(compose, attr)) parts.push(`mirror writes no aria-${attr}`)
   else if (compose) parts.push(`mirror has aria-${attr}: instrument?`)
   if (m3) {
@@ -221,7 +249,7 @@ for (const c of components) {
     : '—'
   const focus = [ref, compose, m3].filter(Boolean).map((t) => `${t.target} ${t.tabsToFocus ?? 'n/a'}`).join(', ')
   rows.push(`| ${c.component} | ${c.tier} | ${behaviour(c)} | ${missCompose ? fmtMissing(missCompose) : 'not measured'} | ${m3 ? m3Summary(m3) : 'no M3 control'} | ${attribution} | ${cmpVersion} |`)
-  details.push(`### ${c.component}\n\nReference: ${c.reference} · route \`#${c.route}\`${c.m3Route ? ` · M3 control \`#${c.m3Route}\`` : ''} · recorded ${r.recordedAt}\n\nTabs until the widget reported focus: ${focus} (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).\n`)
+  details.push(`### ${c.component}\n\nReference: ${c.reference} · route \`#${c.route}\`${c.m3Route ? ` · M3 control \`#${c.m3Route}\`${c.controlNote ? ` (${c.controlNote})` : ''}` : ''} · recorded ${r.recordedAt}\n\nTabs until the widget reported focus: ${focus} (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).\n`)
   for (const t of r.targets) {
     details.push(`<details><summary>${t.target} snapshots</summary>\n`)
     for (const s of t.steps) details.push(`\n**${s.step}** (focused: ${s.focused ?? 'none'})\n\n\`\`\`yaml\n${s.snapshot.trim()}\n\`\`\``)

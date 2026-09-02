@@ -253,6 +253,138 @@ Restored and re-run clean (JVM, wasmJs, browser) before CONFORMANCE.md was gener
 - LOC (`.logs/metric7-loc-s2.txt`): main Kotlin 918, commonMain 895 (97 % shared); `aria`
   530 main and 530 test; conformance 880 lines of TS/JS.
 
+## Session 3 — 2026-09-02
+
+### The build
+
+The gate re-run on the session-2 state at 11:46 executed nothing: `gradle A B C D --rerun`
+applies `--rerun` to D only (a Gradle task option binds to the task named before it), and D was
+the distribution. The three test tasks came back UP-TO-DATE. With `--rerun` after each test task
+(11:48) the 34 tests executed; the Playwright gate (20 targets, 11:49) produced six rows
+byte-identical to the committed file apart from the recorded timestamps. Link, ProgressBar and
+Disclosure: 19 UI tests green on the first JVM run (11:54) and the first wasmJs run (11:56),
+first browser run 11:57, mutations red on JVM, wasmJs and browser at 12:02, final run after.
+Three components in about 75 minutes from the honest gate, none of it on the Compose side:
+no test needed a second attempt.
+
+What fought back was the report, three times:
+
+- **Playwright quotes a string that contains a colon** (`paragraph: "Value: 30"`). The parser
+  kept the quote characters, so the demo's state line came out as `text ""Value: 30""` missing on
+  ProgressBar although the Compose side carried it. `parseSnapshot` now unquotes.
+- **The name-only fallback matched the wrong widget.** The fallback exists for the role
+  collapse (`checkbox "Subscribe"` → `button "Subscribe"`); on Disclosure it matched the
+  reference's `group "System Requirements"` (labelled by its trigger) to the Compose
+  `heading "System Requirements"`, which had already matched exactly, and reported a role
+  change where the group is simply absent. Matching now claims exact role+name pairs first and
+  never reuses a target widget. The six earlier rows did not change.
+- **Playwright folds adjacent mirror text nodes into one line** (`"Syncing Value: 30"`,
+  `Details about system requirements here. Expanded`). The `includes` text rule absorbs it; noted
+  so the per-step snapshots read right.
+
+One addition: a link's destination arrives in the snapshot as a property line (`- /url: …`)
+under the widget. It is parsed as an `href` attribute of that widget and attributed with its own
+wording, since "mirror writes no aria-href" would have been nonsense.
+
+### What the browser received (attribution, metric 8)
+
+Every row is from `conformance/report.js`; this is the mechanism per missing item.
+
+- **Link: `link` → `button`, three times; `href`; `disabled`.** The mirror never writes
+  `role="link"`: 1.12.0's `AriaRoleId` has no link id at all (it ends at `Grid = 10`), so a
+  clickable node is a `button` whatever it is. `jb-main` adds `Link = 12`, but only for a node
+  carrying `LinkTestMarker`, which `TextLinkScope` sets on the child box of a `LinkAnnotation`
+  inside text (`foundation/text/TextLinkScope.kt`, the `LinksComposables` box), never on a
+  standalone clickable. So this row does not flip on the next release either; it would need the
+  port to become a text annotation. `href`: the reference exposes the URL on "Docs"; mirror
+  nodes are `div`s. `disabled` as Button, version-bound. **Framework**, all five.
+  The framework's own link path (`#/fw-link`, `LinkAnnotation.Clickable` in `BasicText`, the
+  control column since Material3 has no link): 1.12.0 emits the link's child box as a
+  **nameless `button`** beside the text node (`text: Follow me`, then `button` with no name:
+  the child has `OnClick` and the marker but no text of its own, and 1.12.0 has none of
+  `jb-main`'s interleaving), and it activated on Enter, Space and click (1, 2, 3), so the
+  framework link also breaks the Enter-only contract. The port consumed Space (1, 1, 2, the
+  reference's sequence). Focus reached "Docs" on the next Tab on both targets; the disabled
+  link was not tabbed to on either (the script stops at Docs).
+- **ProgressBar: `progressbar "Loading"` and `"Syncing"` never arrive.** `ProgressBarRangeInfo`
+  is not among the properties the listener reads, in 1.12.0 or on `jb-main` (0 hits in both),
+  so no role and no `aria-valuenow` / `valuemin` / `valuemax` / `valuetext`; the mirror DOM
+  contains no `aria-value*` at any step. The label lands as `aria-label` on a role-less `div`
+  whose text is "Loading\n30%" (the merged descendants of `progressSemantics`); Material3's
+  `LinearProgressIndicator` is an empty `div` with no label (it takes none). **Framework**, and
+  not version-bound. **The browser instrument is blind to this port.** The reference's value
+  text sits inside the widget, which Playwright renders as the widget's trailing content
+  (`progressbar "Loading": Loading 30%`, excluded by the values rule), and the port produces no
+  widget, so nothing the port does reaches the diff: the mutation that froze the value
+  (semantics red 4/6 on JVM and wasmJs; the Compose snapshot read `Loading 0%` at every step)
+  left the row byte-identical. This is session 1's `pressed` case in full: the semantics
+  instrument is the only guard, and the row counts on that basis with the blindness stated.
+  A second layer: Playwright's `ariaSnapshot` renders no `aria-valuenow` for any role (the
+  injected script reads it only to compute a value string), so a mirror that did write it would
+  show up in the mirror-DOM check, not in the snapshot.
+- **Disclosure: `level`, `expanded`, `group`.** The heading crosses (`Heading` is read: the
+  first non-button widget role this ladder has seen arrive) and so does the button; `level` is
+  missing because Compose semantics has no heading level at all, a vocabulary gap ahead of the
+  mirror; `expanded` is missing because the `Expand` / `Collapse` actions are not read (no
+  `aria-expanded` in 1.12.0 or on `jb-main`); the panel's `group "System Requirements"` is
+  missing because Compose has no group role. The table says `unattributed` for the group,
+  correctly: there is no Material3 disclosure to witness it, and the report attributes only by
+  evidence it holds. The source grep settles it as framework here, not in the table.
+- **Focus.** Two Tabs on Compose, one on the reference, as before, on all three.
+- **CMP-10652, read this session** (the handoff's open item). The issue says what session 2
+  assumed: a `password()`-marked field's live text written into the mirror node's `innerText`.
+  The 1.12.0 `syncNode` writes `EditableText` into `innerText` with no `Password` check
+  (lines 262–264 of the shipped listener). The bullets session 2 saw are explained by that:
+  `EditableText` carries the visually transformed string, so `PasswordVisualTransformation`
+  masked the mirror node by accident of the transformation while the backing `<input>` held the
+  plain text. A field marked `password()` without a transformation leaks as the issue says.
+  Neither NOTES nor the vault note needed correcting.
+
+### Mutation checks (seen red before any row counted)
+
+1. Semantics, one build with all three applied, JVM and wasmJs both
+   (`.logs/37-mutation-build.log`): Link with `enterOnlyActivation` removed, 1/6 failed
+   (`spaceDoesNotActivate`); ProgressBar with the value ignored (`clamped = minValue`), 4/6;
+   Disclosure with the press handler emptied and `heading()` removed, 4/7.
+2. Browser, same build (`.logs/38-mutation-conformance.md`): Link `text "Followed 1 times"`
+   (space), `text "Followed 2 times"` (click, tab-next); Disclosure `heading "System
+   Requirements"` (every step), `text "Details about system requirements here."` and
+   `text "Expanded"` (enter, click). The heading is the first *role* mutation seen red on the
+   browser instrument, because `Heading` is read off a property rather than off `Role`.
+   ProgressBar: unchanged, for the reason above.
+
+Restored and re-run clean (JVM, wasmJs, browser) before CONFORMANCE.md was generated.
+
+### Substitutions and cuts
+
+- **Link** carries no `Role` (Compose has none for a link) rather than a wrong one; `href`
+  opens through `LocalUriHandler` after `onPress`; Space is consumed by
+  `Modifier.enterOnlyActivation()`, the mirror of session 2's `spaceOnlyActivation`. The control
+  column is foundation's `LinkAnnotation`, not a Material3 widget; `components.json` says so in
+  a `controlNote` the report prints in the details line. Not measured: `aria-current`, router
+  integration, the disabled link's tab skip.
+- **ProgressBar** renders its own label and value text (as RadioGroup and TextField do); the
+  value text is a rounded integer percent, not `Intl.NumberFormat` in the page locale;
+  `valueLabel` overrides it. The content slot draws the track from the percentage.
+- **Disclosure**'s panel is not composed while collapsed, where the reference keeps it in the DOM
+  as `hidden="until-found"` for find-in-page; no group role and no `aria-controls` (Compose
+  semantics has no id association). Material3 has no disclosure, so the row has no control
+  route. DisclosureGroup is not ported.
+- **Gate:** `--rerun` after every test task, or the gate is a no-op that prints green.
+- Manual Orca pass: **still not done.** It now has a heading and three links to listen to.
+
+### Metrics (session 3)
+
+- Truth run: 53 UI tests on wasmJs in Chrome plus the distribution, 28 s warm
+  (`.logs/39-final-gradle.log`). Browser instrument: 28 targets, 3.4 min
+  (`.logs/40-final-playwright.log`); the nine rows came out identical to the first recording
+  of the day apart from timestamps.
+- Bundle (`.logs/metric5-bundle-s3.txt`): 4.51 MB gzipped, of which the app `.wasm` 1.08 MB
+  (was 1.06), skiko 3.33 MB (unchanged), JS 0.10 MB. The +0.02 MB is three ports,
+  `LinearProgressIndicator` and the annotation-link route.
+- LOC (`.logs/metric7-loc-s3.txt`): main Kotlin 1211, commonMain 1188 (98 % shared); `aria`
+  714 main and 804 test; conformance 1129 lines of TS/JS.
+
 ## Would I pick this for real work
 
 Not yet an opinion with enough behind it. Two components in, the developer experience is
@@ -271,3 +403,14 @@ controls are the same three buttons. The text field is the one widget that cross
 plain-text copy in a place it can. `jb-main` fixes the roles and `disabled`; nothing on it
 reads `ToggleableState` or `Selected`, so the next release should flip the role rows and leave
 the state rows where they are. That is the number to watch, and the Orca pass is still owed.
+
+Nine components in (session 3): the pattern for Tier 1 is now legible. What crosses is what the
+1.12.0 listener reads off a property rather than off `Role`: text, a name, editable text, and a
+heading. Everything that is a `Role` or a state is a button without state, a link included, and
+`jb-main` changes that only for the roles and for text links, not for any state, not for a
+progress value, not for expanded. ProgressBar is the first row the browser instrument cannot see
+the port on at all, which makes it the clearest statement of the ceiling: a progress bar built
+in Compose for Web is, to Chromium's accessibility tree, a paragraph. Disclosure is the first
+row where a role mutation went red, because heading is one of the two property-derived roles.
+Three components cost the same again, about an hour, and again almost none of it in Kotlin.
+The Orca pass is still owed.

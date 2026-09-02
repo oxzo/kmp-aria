@@ -108,6 +108,11 @@ cd conformance && npx playwright test                    # reference :5173 + dis
 node conformance/report.js > CONFORMANCE.md
 ```
 
+Gradle test tasks are UP-TO-DATE after a no-change run. `--rerun` is a per-task option and binds
+to the task named before it, so a forced gate needs it after every test task:
+`gradle :aria:jvmTest --rerun :aria:wasmJsBrowserTest --rerun …`. Write the report to a temp
+file and move it: the redirect truncates `CONFORMANCE.md` before `report.js` runs.
+
 ## Status
 
 **Session 1 (2026-09-02): gate met.** Button and ToggleButton rows in CONFORMANCE.md are
@@ -135,5 +140,26 @@ Measured on Compose Multiplatform 1.12.0 (see NOTES.md for mechanism and source 
 - Setup 12 minutes and 0.81 GB cold; browser test loop 15 s; edit-to-visible 7.1 s; demo
   bundle 4.49 MB gzipped (3.33 MB of it skiko).
 
-Not done: the manual Orca pass. Next: Link, ProgressBar, Disclosure, then the rest of Tier 1,
-each with UI tests, a spec, and a row.
+**Session 3 (2026-09-02): Link, ProgressBar, Disclosure.** Nine rows. Link and Disclosure's
+mutations were seen red on the browser instrument and on both runs of the semantics instrument;
+ProgressBar's only on the semantics instrument, because the browser instrument cannot see that
+port at all (below).
+
+- A link is a `button` on the port and a nameless `button` on the framework's own
+  `LinkAnnotation` path; 1.12.0 has no link role id, `jb-main` adds one for text annotations
+  only. The URL of a link has no carrier. The framework link activates on Space, which the
+  react-aria contract forbids and the port consumes.
+- ProgressBar is, to the browser, a paragraph: `ProgressBarRangeInfo` is not read by the
+  listener (1.12.0 or `jb-main`), so no role and no value attributes cross; Material3's
+  `LinearProgressIndicator` is an empty `div`. Since the reference's value text sits inside
+  its widget and the port has no widget, no port mutation can reach the diff; the semantics
+  instrument is that row's only guard.
+- Disclosure's heading crosses (the first property-derived role to arrive) without a level,
+  the trigger crosses without `expanded`, and the panel's `group` has no Compose role. Its
+  heading mutation is the first role mutation this project has seen red on the browser
+  instrument.
+- Bundle 4.51 MB gzipped (skiko unchanged); main Kotlin 1211 lines, 98 % shared.
+
+Not done: the manual Orca pass. Next: the rest of Tier 1 (ToggleButtonGroup, CheckboxGroup,
+SearchField, NumberField, Meter, Separator, Group, Toolbar, Form, DisclosureGroup,
+Breadcrumbs), each with UI tests, a spec, and a row.
