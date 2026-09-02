@@ -8,7 +8,8 @@ import { COMPOSE_ORIGIN, StepRecord, Target, clickByTag, recorder, writeControlR
  * Script: load, Tab, Tab, Space, pointer click.
  */
 const controls = [
-  { control: 'M3 Switch', route: '/m3-switch', tag: 'sw' },
+  // M3 Switch moved to the Switch row's M3 column in session 2; IconToggleButton and Button
+  // stay as the record of the two-Tab control script the ladder rows do not run.
   { control: 'M3 IconToggleButton', route: '/m3-toggle-button', tag: 'tb' },
   { control: 'M3 Button', route: '/m3-button', tag: 'btn' },
 ]

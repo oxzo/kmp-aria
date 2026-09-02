@@ -114,14 +114,25 @@ node conformance/report.js > CONFORMANCE.md
 script-generated; the ToggleButton row shows `pressed` missing on Compose and present on the
 reference; both instruments were seen red under mutation before the rows were generated.
 
+**Session 2 (2026-09-02): Checkbox, Switch, RadioGroup, TextField.** Six rows, all
+script-generated; every row's behaviour mutation was seen red on both instruments first.
+
 Measured on Compose Multiplatform 1.12.0 (see NOTES.md for mechanism and source lines):
 
-- `pressed` and `disabled` do not reach the browser; both attributed to the framework, the
-  second version-bound (written on `jb-main`, absent from the shipped 1.12.0).
-- 1.12.0 overrides any explicit role with `button` on clickable nodes, so Checkbox, Switch,
-  RadioButton and Tab roles cannot reach the browser in this version.
+- `pressed`, `checked` and `disabled` do not reach the browser; all attributed to the
+  framework, `disabled` version-bound (written on `jb-main`, absent from the shipped 1.12.0).
+- 1.12.0 overrides any explicit role with `button` on clickable nodes: measured on the
+  Checkbox, Switch and RadioGroup rows, on the port and on the Material3 controls alike.
+  `radiogroup` never reaches the browser either (`SelectableGroup` is not mirrored).
+- TextField is the first row with nothing missing: `textbox` named by its label crosses, and
+  typing through the canvas works. Two things the row cannot show: Playwright's snapshot omits
+  contenteditable content, so the value is invisible to the instrument though the mirror
+  carries it; and Compose's backing `<input>` appears as a second, nameless textbox that holds
+  the typed text, the password included, in plain text.
+- The 1.12.0 mirror never removes `aria-label` once written, so a `contentDescription` that
+  goes away leaves its old label behind (`jb-main` too).
 - Setup 12 minutes and 0.81 GB cold; browser test loop 15 s; edit-to-visible 7.1 s; demo
-  bundle 4.13 MB gzipped (3.33 MB of it skiko).
+  bundle 4.49 MB gzipped (3.33 MB of it skiko).
 
-Not done: the manual Orca pass. Next: Checkbox, Switch, RadioGroup, TextField (Tier 1 in
-ladder order), each with UI tests, a spec, and a row.
+Not done: the manual Orca pass. Next: Link, ProgressBar, Disclosure, then the rest of Tier 1,
+each with UI tests, a spec, and a row.

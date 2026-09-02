@@ -5,18 +5,28 @@
 Columns: behaviour = Compose UI tests passed/total on wasmJs in Chrome (flagged `jvm-only` when
 the browser run is missing); a11y = roles, states, and text the React Aria reference exposes
 that the Compose port's browser accessibility tree does not, per Playwright `ariaSnapshot`
-diff, with the interaction steps where it was missing; M3 = the widget roles and states the
+diff, with the interaction steps where it was missing (widget values are not diffed, see
+below); M3 = the widget roles and states the
 Material3 control route (the framework's own widget) exposed at any step, not a name diff;
 attribution = for each missing item, whether the
-Compose accessibility mirror wrote the attribute at all and whether the M3 control exposes the
-same state family, hence framework ceiling vs port bug; CMP = Compose Multiplatform version.
+Compose accessibility mirror wrote the attribute (or role) at all and whether the M3 control
+exposes the same state family (or role), hence framework ceiling vs port bug; a missing widget
+whose name the mirror never carried, and a missing text, are the port's; CMP = Compose
+Multiplatform version.
 
 No aggregate, no rank. "none" means nothing the reference exposed was missing at any step.
+Widget values (`textbox "Name": Ada`) are recorded but not diffed: Playwright's snapshot
+renders an `<input>`'s value and never a contenteditable node's content, so a Compose text
+field's value is invisible to the instrument although the mirror node carries it.
 
 | Component | Tier | Behaviour (pass/total) | A11y missing vs reference | M3 control: roles and states exposed | Attribution | CMP |
 |---|---|---|---|---|---|---|
 | Button | 1 | 3/3 | `disabled` (load, enter, space, click, focus) | roles: button; states: none at any step | `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled) | 1.12.0 |
 | ToggleButton | 1 | 3/3 | `pressed` (space, click) | roles: button; states: none at any step | `pressed`: framework (mirror writes no aria-pressed; M3 control also lacks pressed/checked/selected) | 1.12.0 |
+| Checkbox | 1 | 8/8 | `role checkbox→button "Subscribe"` (load, space, enter, click, focus); `role checkbox→button "Select all"` (load, space, enter, click, focus); `checked` (load, space, enter, click, focus); `role checkbox→button "Disabled"` (load, space, enter, click, focus); `disabled` (load, space, enter, click, focus) | roles: button (a nameless one among them); states: none at any step | `role checkbox→button "Subscribe"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `role checkbox→button "Select all"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected); `role checkbox→button "Disabled"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled) | 1.12.0 |
+| Switch | 1 | 5/5 | `role switch→button "Wi-Fi"` (load, space, enter, click, focus); `checked` (space, enter) | roles: button (a nameless one among them); states: none at any step | `role switch→button "Wi-Fi"`: framework (mirror never writes role=switch; M3 control also lacks role switch); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected) | 1.12.0 |
+| RadioGroup | 1 | 9/9 | `radiogroup "Favorite pet"` (load, space, down, enter, click, tab-out, focus); `role radio→button "Dog"` (load, space, down, enter, click, tab-out, focus); `role radio→button "Cat"` (load, space, down, enter, click, tab-out, focus); `role radio→button "Dragon"` (load, space, down, enter, click, tab-out, focus); `checked` (space, down, enter, click, tab-out) | roles: button (a nameless one among them); states: none at any step | `radiogroup "Favorite pet"`: framework (mirror never writes role=radiogroup; M3 control also lacks role radiogroup); `role radio→button "Dog"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Cat"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Dragon"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected) | 1.12.0 |
+| TextField | 1 | 6/6 | none | roles: textbox (a nameless one among them); states: none at any step | — | 1.12.0 |
 
 ## Framework controls recorded without a port counterpart
 
@@ -28,9 +38,8 @@ step. A ladder row for the matching React Aria component replaces the entry here
 |---|---|---|---|---|---|---|
 | M3 Button | `#/m3-button` | button | "Press me", "Disabled" | none at any step | "Pressed 0 times", "Pressed 1 times", "Pressed 2 times" | 1.12.0 |
 | M3 IconToggleButton | `#/m3-toggle-button` | button | "☆", "★" | none at any step | "Not selected", "Selected" | 1.12.0 |
-| M3 Switch | `#/m3-switch` | button | (no name) | none at any step | ""Off"", ""On"" | 1.12.0 |
 
-<details><summary>M3 Button snapshots (recorded 2026-09-02T05:37:14.359Z)</summary>
+<details><summary>M3 Button snapshots (recorded 2026-09-02T08:18:53.615Z)</summary>
 
 
 **load**
@@ -75,7 +84,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 </details>
 
-<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T05:37:08.200Z)</summary>
+<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T08:18:47.462Z)</summary>
 
 
 **load**
@@ -115,52 +124,12 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 </details>
 
-<details><summary>M3 Switch snapshots (recorded 2026-09-02T05:37:02.040Z)</summary>
-
-
-**load**
-
-```yaml
-- button
-- text: "Off"
-```
-
-**tab1**
-
-```yaml
-- button
-- text: "Off"
-```
-
-**tab2**
-
-```yaml
-- button
-- text: "Off"
-```
-
-**space**
-
-```yaml
-- button
-- text: "On"
-```
-
-**click**
-
-```yaml
-- button
-- text: "Off"
-```
-
-</details>
-
 
 ## Per-step records
 
 ### Button
 
-Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T05:21:35.948Z
+Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T08:18:20.410Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -289,14 +258,6 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 - text: Pressed 0 times
 ```
 
-**tab3** (focused: none)
-
-```yaml
-- button "Press me"
-- button "Disabled"
-- text: Pressed 0 times
-```
-
 **enter** (focused: none)
 
 ```yaml
@@ -325,7 +286,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### ToggleButton
 
-Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T05:21:58.038Z
+Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T08:20:28.015Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -440,13 +401,6 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 - text: Not selected
 ```
 
-**tab3** (focused: none)
-
-```yaml
-- button "☆"
-- text: Not selected
-```
-
 **space** (focused: none)
 
 ```yaml
@@ -466,6 +420,833 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 ```yaml
 - button "★"
 - text: Selected
+```
+
+</details>
+
+### Checkbox
+
+Reference: https://react-aria.adobe.com/Checkbox · route `#/checkbox` · M3 control `#/m3-checkbox` · recorded 2026-09-02T08:18:41.311Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- checkbox "Subscribe"
+- text: Subscribe
+- checkbox "Select all" [checked=mixed]
+- text: Select all
+- checkbox "Disabled" [disabled]
+- text: Disabled
+- paragraph: Not selected
+```
+
+**tab1** (focused: Subscribe)
+
+```yaml
+- checkbox "Subscribe"
+- text: Subscribe
+- checkbox "Select all" [checked=mixed]
+- text: Select all
+- checkbox "Disabled" [disabled]
+- text: Disabled
+- paragraph: Not selected
+```
+
+**space** (focused: Subscribe)
+
+```yaml
+- checkbox "Subscribe" [checked]
+- text: Subscribe
+- checkbox "Select all" [checked=mixed]
+- text: Select all
+- checkbox "Disabled" [disabled]
+- text: Disabled
+- paragraph: Selected
+```
+
+**enter** (focused: Subscribe)
+
+```yaml
+- checkbox "Subscribe" [checked]
+- text: Subscribe
+- checkbox "Select all" [checked=mixed]
+- text: Select all
+- checkbox "Disabled" [disabled]
+- text: Disabled
+- paragraph: Selected
+```
+
+**click** (focused: Subscribe)
+
+```yaml
+- checkbox "Subscribe"
+- text: Subscribe
+- checkbox "Select all" [checked=mixed]
+- text: Select all
+- checkbox "Disabled" [disabled]
+- text: Disabled
+- paragraph: Not selected
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button "Subscribe"
+- button "Select all"
+- button "Disabled"
+- text: Not selected
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button "Subscribe"
+- button "Select all"
+- button "Disabled"
+- text: Not selected
+```
+
+**tab2** (focused: Subscribe)
+
+```yaml
+- button "Subscribe (focused)": Subscribe
+- button "Select all"
+- button "Disabled"
+- text: Not selected
+```
+
+**space** (focused: Subscribe)
+
+```yaml
+- button "Subscribe (focused)": Subscribe
+- button "Select all"
+- button "Disabled"
+- text: Selected
+```
+
+**enter** (focused: Subscribe)
+
+```yaml
+- button "Subscribe (focused)": Subscribe
+- button "Select all"
+- button "Disabled"
+- text: Selected
+```
+
+**click** (focused: Subscribe)
+
+```yaml
+- button "Subscribe (focused)": Subscribe
+- button "Select all"
+- button "Disabled"
+- text: Not selected
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button
+- text: Subscribe Not selected
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button
+- text: Subscribe Not selected
+```
+
+**tab2** (focused: none)
+
+```yaml
+- button
+- text: Subscribe Not selected
+```
+
+**space** (focused: none)
+
+```yaml
+- button
+- text: Subscribe Selected
+```
+
+**enter** (focused: none)
+
+```yaml
+- button
+- text: Subscribe Not selected
+```
+
+**click** (focused: none)
+
+```yaml
+- button
+- text: Subscribe Selected
+```
+
+</details>
+
+### Switch
+
+Reference: https://react-aria.adobe.com/Switch · route `#/switch` · M3 control `#/m3-switch` · recorded 2026-09-02T08:19:42.644Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- switch "Wi-Fi"
+- text: Wi-Fi
+- paragraph: "Off"
+```
+
+**tab1** (focused: Wi-Fi)
+
+```yaml
+- switch "Wi-Fi"
+- text: Wi-Fi
+- paragraph: "Off"
+```
+
+**space** (focused: Wi-Fi)
+
+```yaml
+- switch "Wi-Fi" [checked]
+- text: Wi-Fi
+- paragraph: "On"
+```
+
+**enter** (focused: Wi-Fi)
+
+```yaml
+- switch "Wi-Fi" [checked]
+- text: Wi-Fi
+- paragraph: "On"
+```
+
+**click** (focused: Wi-Fi)
+
+```yaml
+- switch "Wi-Fi"
+- text: Wi-Fi
+- paragraph: "Off"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button "Wi-Fi"
+- text: "Off"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button "Wi-Fi"
+- text: "Off"
+```
+
+**tab2** (focused: Wi-Fi)
+
+```yaml
+- button "Wi-Fi (focused)": Wi-Fi
+- text: "Off"
+```
+
+**space** (focused: Wi-Fi)
+
+```yaml
+- button "Wi-Fi (focused)": Wi-Fi
+- text: "On"
+```
+
+**enter** (focused: Wi-Fi)
+
+```yaml
+- button "Wi-Fi (focused)": Wi-Fi
+- text: "On"
+```
+
+**click** (focused: Wi-Fi)
+
+```yaml
+- button "Wi-Fi (focused)": Wi-Fi
+- text: "Off"
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button
+- text: "Off"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button
+- text: "Off"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- button
+- text: "Off"
+```
+
+**space** (focused: none)
+
+```yaml
+- button
+- text: "On"
+```
+
+**enter** (focused: none)
+
+```yaml
+- button
+- text: "Off"
+```
+
+**click** (focused: none)
+
+```yaml
+- button
+- text: "On"
+```
+
+</details>
+
+### RadioGroup
+
+Reference: https://react-aria.adobe.com/RadioGroup · route `#/radio-group` · M3 control `#/m3-radio` · recorded 2026-09-02T08:19:21.757Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- radiogroup "Favorite pet":
+  - text: Favorite pet
+  - radio "Dog"
+  - text: Dog
+  - radio "Cat"
+  - text: Cat
+  - radio "Dragon"
+  - text: Dragon
+- paragraph: "Selected: none"
+```
+
+**tab1** (focused: Dog)
+
+```yaml
+- radiogroup "Favorite pet":
+  - text: Favorite pet
+  - radio "Dog"
+  - text: Dog
+  - radio "Cat"
+  - text: Cat
+  - radio "Dragon"
+  - text: Dragon
+- paragraph: "Selected: none"
+```
+
+**space** (focused: Dog)
+
+```yaml
+- radiogroup "Favorite pet":
+  - text: Favorite pet
+  - radio "Dog" [checked]
+  - text: Dog
+  - radio "Cat"
+  - text: Cat
+  - radio "Dragon"
+  - text: Dragon
+- paragraph: "Selected: dog"
+```
+
+**down** (focused: Cat)
+
+```yaml
+- radiogroup "Favorite pet":
+  - text: Favorite pet
+  - radio "Dog"
+  - text: Dog
+  - radio "Cat" [checked]
+  - text: Cat
+  - radio "Dragon"
+  - text: Dragon
+- paragraph: "Selected: cat"
+```
+
+**enter** (focused: Cat)
+
+```yaml
+- radiogroup "Favorite pet":
+  - text: Favorite pet
+  - radio "Dog"
+  - text: Dog
+  - radio "Cat" [checked]
+  - text: Cat
+  - radio "Dragon"
+  - text: Dragon
+- paragraph: "Selected: cat"
+```
+
+**click** (focused: Dragon)
+
+```yaml
+- radiogroup "Favorite pet":
+  - text: Favorite pet
+  - radio "Dog"
+  - text: Dog
+  - radio "Cat"
+  - text: Cat
+  - radio "Dragon" [checked]
+  - text: Dragon
+- paragraph: "Selected: dragon"
+```
+
+**tab-out** (focused: none)
+
+```yaml
+- radiogroup "Favorite pet":
+  - text: Favorite pet
+  - radio "Dog"
+  - text: Dog
+  - radio "Cat"
+  - text: Cat
+  - radio "Dragon" [checked]
+  - text: Dragon
+- paragraph: "Selected: dragon"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button "Dog"
+- button "Cat"
+- button "Dragon"
+- text: "Selected: none"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button "Dog"
+- button "Cat"
+- button "Dragon"
+- text: "Selected: none"
+```
+
+**tab2** (focused: Dog)
+
+```yaml
+- text: Favorite pet
+- button "Dog (focused)": Dog
+- button "Cat"
+- button "Dragon"
+- text: "Selected: none"
+```
+
+**space** (focused: Dog)
+
+```yaml
+- text: Favorite pet
+- button "Dog (focused)": Dog
+- button "Cat"
+- button "Dragon"
+- text: "Selected: dog"
+```
+
+**down** (focused: Cat)
+
+```yaml
+- text: Favorite pet
+- button "Dog"
+- button "Cat (focused)": Cat
+- button "Dragon"
+- text: "Selected: cat"
+```
+
+**enter** (focused: Cat)
+
+```yaml
+- text: Favorite pet
+- button "Dog"
+- button "Cat (focused)": Cat
+- button "Dragon"
+- text: "Selected: cat"
+```
+
+**click** (focused: Dragon)
+
+```yaml
+- text: Favorite pet
+- button "Dog"
+- button "Cat"
+- button "Dragon (focused)": Dragon
+- text: "Selected: dragon"
+```
+
+**tab-out** (focused: Dragon)
+
+```yaml
+- text: Favorite pet
+- button "Dog"
+- button "Cat"
+- button "Dragon (focused)": Dragon
+- text: "Selected: dragon"
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: none"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: none"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: none"
+```
+
+**space** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: dog"
+```
+
+**down** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: dog"
+```
+
+**enter** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: dog"
+```
+
+**click** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: dragon"
+```
+
+**tab-out** (focused: none)
+
+```yaml
+- text: Favorite pet
+- button
+- text: Dog
+- button
+- text: Cat
+- button
+- text: "Dragon Selected: dragon"
+```
+
+</details>
+
+### TextField
+
+Reference: https://react-aria.adobe.com/TextField · route `#/text-field` · M3 control `#/m3-text-field` · recorded 2026-09-02T08:20:07.146Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Name
+- textbox "Name"
+- text: Password
+- textbox "Password"
+- paragraph: "Value:"
+```
+
+**tab1** (focused: Name)
+
+```yaml
+- text: Name
+- textbox "Name"
+- text: Password
+- textbox "Password"
+- paragraph: "Value:"
+```
+
+**type** (focused: Name)
+
+```yaml
+- text: Name
+- textbox "Name": Ada
+- text: Password
+- textbox "Password"
+- paragraph: "Value: Ada"
+```
+
+**to-password** (focused: Password)
+
+```yaml
+- text: Name
+- textbox "Name": Ada
+- text: Password
+- textbox "Password"
+- paragraph: "Value: Ada"
+```
+
+**type-secret** (focused: Password)
+
+```yaml
+- text: Name
+- textbox "Name": Ada
+- text: Password
+- textbox "Password": hunter2
+- paragraph: "Value: Ada"
+```
+
+**tab-out** (focused: none)
+
+```yaml
+- text: Name
+- textbox "Name": Ada
+- text: Password
+- textbox "Password": hunter2
+- paragraph: "Value: Ada"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Name
+- textbox "Name"
+- text: Password
+- textbox "Password"
+- text: "Value:"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Name
+- textbox "Name"
+- text: Password
+- textbox "Password"
+- text: "Value:"
+```
+
+**tab2** (focused: Name)
+
+```yaml
+- text: Name
+- textbox "Name (focused)"
+- text: Password
+- textbox "Password"
+- text: "Value:"
+- textbox
+```
+
+**type** (focused: Name)
+
+```yaml
+- text: Name
+- textbox "Name (focused)"
+- text: Password
+- textbox "Password"
+- text: "Value: Ada"
+- textbox: Ada
+```
+
+**to-password** (focused: Password)
+
+```yaml
+- text: Name
+- textbox "Name"
+- text: Password
+- textbox "Password (focused)"
+- text: "Value: Ada"
+- textbox
+```
+
+**type-secret** (focused: Password)
+
+```yaml
+- text: Name
+- textbox "Name"
+- text: Password
+- textbox "Password (focused)"
+- text: "Value: Ada"
+- textbox: hunter2
+```
+
+**tab-out** (focused: Name)
+
+```yaml
+- text: Name
+- textbox "Name (focused)"
+- text: Password
+- textbox "Password"
+- text: "Value: Ada"
+- textbox: Ada
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- textbox
+- text: "Value:"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- textbox
+- text: "Value:"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- textbox
+- text: "Value:"
+- textbox
+```
+
+**type** (focused: none)
+
+```yaml
+- textbox
+- text: "Value: Ada"
+- textbox: Ada
+```
+
+**to-password** (focused: none)
+
+```yaml
+- textbox
+- text: "Value: Ada"
+- textbox: Ada
+```
+
+**type-secret** (focused: none)
+
+```yaml
+- textbox
+- text: "Value: Ada hunter2"
+- textbox: Ada hunter2
+```
+
+**tab-out** (focused: none)
+
+```yaml
+- textbox
+- text: "Value: Ada hunter2"
+- textbox: Ada hunter2
 ```
 
 </details>

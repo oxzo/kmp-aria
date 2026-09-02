@@ -154,14 +154,20 @@ export async function focusedName(page: Page, target: Target, snap: string): Pro
     return await page.evaluate(() => {
       const el = document.activeElement
       if (!el || el === document.body) return null
-      return el.getAttribute('aria-label') ?? el.textContent?.trim() ?? null
+      // An input named by its <label> (checkbox, radio, text field) has no text of its own.
+      const label = (el as HTMLInputElement).labels?.[0]?.textContent?.trim()
+      return el.getAttribute('aria-label') ?? (label || el.textContent?.trim() || null)
     })
   }
   const m = snap.match(/"([^"]*) \(focused\)"/)
   return m ? m[1] : null
 }
 
-/** Press Tab until `name` reports focus, at most `max` times. Returns the count or null. */
+/**
+ * Press Tab until `name` reports focus, at most `max` times. Returns the count or null.
+ * M3 routes carry no focus marker, so on the m3 target the cap is two Tabs (the canvas, then
+ * the first widget), which is where the rest of the script assumes focus to be.
+ */
 export async function tabUntilFocused(
   page: Page,
   target: Target,
@@ -169,6 +175,7 @@ export async function tabUntilFocused(
   record: (step: string) => Promise<StepRecord>,
   max = 3,
 ): Promise<number | null> {
+  if (target.name === 'm3') max = Math.min(max, 2)
   for (let i = 1; i <= max; i++) {
     await page.keyboard.press('Tab')
     const r = await record(`tab${i}`)

@@ -3,8 +3,15 @@ package dev.oxzo.aria.interactions
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.selection.triStateToggleable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.state.ToggleableState
 
 /**
  * Port of react-aria's `usePress` contract for a single activation: pointer press, Enter and
@@ -51,3 +58,44 @@ fun Modifier.ariaToggleable(
     role = role,
     onValueChange = onChange,
 )
+
+/**
+ * Port of react-aria's `useToggle` as Checkbox and Switch use it: a toggleable whose keyboard
+ * activation is Space only. react-aria's `usePress` lets Enter through for buttons but not for
+ * checkbox and radio inputs (`usePress.ts`, `isValidInputKey`: "Only space should toggle
+ * checkboxes and radios, not enter"), which is the native input contract. Compose's
+ * `toggleable` treats Enter and Space alike, so Enter is consumed before it reaches the
+ * primitive; the browser instrument sees the difference as the state text after the Enter step.
+ *
+ * `readOnly` keeps the node focusable and makes the toggle a no-op: Compose has no read-only
+ * semantics property for toggleables, so `aria-readonly` has nothing to cross on any platform.
+ * `invalid` sets the `Error` semantics property, the Compose vocabulary for `aria-invalid`.
+ */
+fun Modifier.ariaCheckable(
+    state: ToggleableState,
+    onToggle: () -> Unit,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    invalid: Boolean = false,
+    role: Role = Role.Checkbox,
+    interactionSource: MutableInteractionSource? = null,
+): Modifier = this
+    .spaceOnlyActivation()
+    .then(if (invalid) Modifier.semantics { error("Invalid") } else Modifier)
+    .triStateToggleable(
+        state = state,
+        interactionSource = interactionSource,
+        indication = null,
+        enabled = enabled,
+        role = role,
+        onClick = { if (!readOnly) onToggle() },
+    )
+
+/**
+ * Consumes Enter and NumPadEnter (down and up) before the clickable primitive sees them, so
+ * only Space activates. Place before the primitive in the chain: preview key events travel
+ * from the outer modifier inward.
+ */
+internal fun Modifier.spaceOnlyActivation(): Modifier = this.onPreviewKeyEvent {
+    it.key == Key.Enter || it.key == Key.NumPadEnter
+}

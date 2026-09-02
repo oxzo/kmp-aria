@@ -59,10 +59,17 @@ function parseSnapshot(text) {
 }
 
 function widgets(entries) { return entries.filter((e) => WIDGET_ROLES.has(e.role)) }
+/**
+ * Static text: text nodes and the names of non-widget entries. A widget's trailing text is its
+ * value (`textbox "Name": Ada`) and is not diffed: Playwright renders an <input>'s value, a
+ * password's included, but never a contenteditable node's content, so the Compose value is
+ * invisible to it. Values stay in the per-step snapshots; behaviour is read from the demo's
+ * state line instead.
+ */
 function texts(entries) {
   const out = new Set()
   for (const e of entries) {
-    if (e.text) out.add(e.text.trim())
+    if (e.text && !WIDGET_ROLES.has(e.role)) out.add(e.text.trim())
     if (e.name && !WIDGET_ROLES.has(e.role)) out.add(e.name.trim())
   }
   return out
@@ -117,7 +124,9 @@ function diffTarget(ref, target) {
       if (!same) note(`role ${w.role}→${byName.role} "${w.name}"`, step)
       for (const a of w.attrs) if (!byName.attrs.includes(a)) note(a, step)
     }
-    const tt = texts(te)
+    // The reference renders a label as both the widget's name and a text node; a target that
+    // merged the label into the name still exposes the string, so widget names count as texts.
+    const tt = new Set([...texts(te), ...tw.map((w) => w.name).filter(Boolean)])
     for (const t of texts(re)) if (![...tt].some((x) => x.includes(t))) note(`text "${t}"`, step)
   }
   return missing
@@ -127,13 +136,44 @@ function diffTarget(ref, target) {
 function mirrorHas(record, attr) {
   return record.steps.some((s) => s.mirrorHtml && new RegExp(`\\s(aria-)?${attr}(=|\\s|>)`).test(s.mirrorHtml))
 }
+const esc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+function mirrorHasRole(record, role) {
+  return record.steps.some((s) => s.mirrorHtml && new RegExp(`\\srole="${esc(role)}"`).test(s.mirrorHtml))
+}
+/** True if any mirror node carries the name, as aria-label or as its text: the port produced it. */
+function mirrorHasName(record, name) {
+  const re = new RegExp(`aria-label="${esc(name)}( \\(focused\\))?"|>${esc(name)}<`)
+  return record.steps.some((s) => s.mirrorHtml && re.test(s.mirrorHtml))
+}
+function m3Roles(record) {
+  const roles = new Set()
+  for (const s of record.steps) for (const e of widgets(parseSnapshot(s.snapshot))) roles.add(e.role)
+  return roles
+}
 function snapshotsHaveAny(record, attrs) {
   return record.steps.some((s) => parseSnapshot(s.snapshot).some((e) => e.attrs.some((a) => attrs.includes(a))))
 }
 
 function attribute(key, compose, m3) {
   const attr = key.replace(/^aria-/, '')
-  if (/^(text|role|step)\b/.test(key) || key.includes('"')) return 'port (behaviour/name/role)'
+  if (/^text\b/.test(key)) return 'port (behaviour/name)'
+  if (/^step\b/.test(key)) return 'harness (step not recorded)'
+  // `role X→Y "name"`: the widget is there under another role. `X "name"`: no widget by that
+  // name; if the mirror still carries the name (as aria-label or text) the role was dropped,
+  // otherwise the port never produced the name.
+  const changed = key.match(/^role ([a-z]+)→[a-z]+ "(.*)"$/)
+  const missing = key.match(/^([a-z]+) "(.*)"$/)
+  if (changed || missing) {
+    const role = (changed ?? missing)[1]
+    const name = (changed ?? missing)[2]
+    if (missing && compose && !mirrorHasName(compose, name)) return 'port (name)'
+    const parts = []
+    if (compose) parts.push(mirrorHasRole(compose, role) ? `mirror writes role=${role}: instrument?` : `mirror never writes role=${role}`)
+    const m3Lacks = m3 ? !m3Roles(m3).has(role) : null
+    if (m3) parts.push(m3Lacks ? `M3 control also lacks role ${role}` : `M3 control exposes role ${role}`)
+    const framework = compose && !mirrorHasRole(compose, role) && (m3 ? m3Lacks : false)
+    return `${framework ? 'framework' : m3 ? 'port' : 'unattributed'} (${parts.join('; ')})`
+  }
   const parts = []
   if (compose && !mirrorHas(compose, attr)) parts.push(`mirror writes no aria-${attr}`)
   else if (compose) parts.push(`mirror has aria-${attr}: instrument?`)
@@ -145,15 +185,17 @@ function attribute(key, compose, m3) {
   return `${framework ? 'framework' : m3 ? 'port' : 'unattributed'} (${parts.join('; ')})`
 }
 
-/** What the M3 control exposed: widget roles seen, and states seen, across all steps. */
+/** What the M3 control exposed: widget roles (with whether any was nameless) and states, across all steps. */
 function m3Summary(record) {
   const roles = new Set()
   const states = new Set()
+  let nameless = false
   for (const s of record.steps) for (const e of widgets(parseSnapshot(s.snapshot))) {
     roles.add(e.role)
+    if (e.name === null) nameless = true
     for (const a of e.attrs) states.add(a)
   }
-  return `roles: ${[...roles].join(', ') || 'none'}; states: ${[...states].map((a) => `\`${a}\``).join(', ') || 'none at any step'}`
+  return `roles: ${[...roles].join(', ') || 'none'}${nameless ? ' (a nameless one among them)' : ''}; states: ${[...states].map((a) => `\`${a}\``).join(', ') || 'none at any step'}`
 }
 
 function fmtMissing(missing) {
@@ -218,13 +260,19 @@ const out = `# Conformance — per-component table
 Columns: behaviour = Compose UI tests passed/total on wasmJs in Chrome (flagged \`jvm-only\` when
 the browser run is missing); a11y = roles, states, and text the React Aria reference exposes
 that the Compose port's browser accessibility tree does not, per Playwright \`ariaSnapshot\`
-diff, with the interaction steps where it was missing; M3 = the widget roles and states the
+diff, with the interaction steps where it was missing (widget values are not diffed, see
+below); M3 = the widget roles and states the
 Material3 control route (the framework's own widget) exposed at any step, not a name diff;
 attribution = for each missing item, whether the
-Compose accessibility mirror wrote the attribute at all and whether the M3 control exposes the
-same state family, hence framework ceiling vs port bug; CMP = Compose Multiplatform version.
+Compose accessibility mirror wrote the attribute (or role) at all and whether the M3 control
+exposes the same state family (or role), hence framework ceiling vs port bug; a missing widget
+whose name the mirror never carried, and a missing text, are the port's; CMP = Compose
+Multiplatform version.
 
 No aggregate, no rank. "none" means nothing the reference exposed was missing at any step.
+Widget values (\`textbox "Name": Ada\`) are recorded but not diffed: Playwright's snapshot
+renders an \`<input>\`'s value and never a contenteditable node's content, so a Compose text
+field's value is invisible to the instrument although the mirror node carries it.
 
 | Component | Tier | Behaviour (pass/total) | A11y missing vs reference | M3 control: roles and states exposed | Attribution | CMP |
 |---|---|---|---|---|---|---|

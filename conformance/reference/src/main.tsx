@@ -5,9 +5,9 @@
  */
 import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Button, ToggleButton } from 'react-aria-components'
+import { Button, Checkbox, Input, Label, Radio, RadioGroup, Switch, TextField, ToggleButton } from 'react-aria-components'
 
-const routes = ['/button', '/toggle-button']
+const routes = ['/button', '/toggle-button', '/checkbox', '/switch', '/radio-group', '/text-field']
 
 function useHash(): string {
   const [hash, setHash] = useState(window.location.hash)
@@ -61,6 +61,75 @@ function ToggleButtonDemo() {
   )
 }
 
+function CheckboxDemo() {
+  const [selected, setSelected] = useState(false)
+  return (
+    <>
+      <Checkbox data-testid="cb" isSelected={selected} onChange={setSelected}>
+        Subscribe
+      </Checkbox>
+      <Checkbox data-testid="cb-mixed" isIndeterminate>
+        Select all
+      </Checkbox>
+      <Checkbox data-testid="cb-disabled" isDisabled>
+        Disabled
+      </Checkbox>
+      <p data-testid="state">{selected ? 'Selected' : 'Not selected'}</p>
+    </>
+  )
+}
+
+function SwitchDemo() {
+  const [on, setOn] = useState(false)
+  return (
+    <>
+      <Switch data-testid="sw" isSelected={on} onChange={setOn}>
+        Wi-Fi
+      </Switch>
+      <p data-testid="state">{on ? 'On' : 'Off'}</p>
+    </>
+  )
+}
+
+function RadioGroupDemo() {
+  const [pet, setPet] = useState<string | null>(null)
+  return (
+    <>
+      <RadioGroup data-testid="group" value={pet} onChange={setPet}>
+        <Label>Favorite pet</Label>
+        <Radio data-testid="r-dog" value="dog">
+          Dog
+        </Radio>
+        <Radio data-testid="r-cat" value="cat">
+          Cat
+        </Radio>
+        <Radio data-testid="r-dragon" value="dragon">
+          Dragon
+        </Radio>
+      </RadioGroup>
+      <p data-testid="state">Selected: {pet ?? 'none'}</p>
+    </>
+  )
+}
+
+function TextFieldDemo() {
+  const [name, setName] = useState('')
+  const [secret, setSecret] = useState('')
+  return (
+    <>
+      <TextField value={name} onChange={setName}>
+        <Label>Name</Label>
+        <Input data-testid="tf" />
+      </TextField>
+      <TextField value={secret} onChange={setSecret} type="password">
+        <Label>Password</Label>
+        <Input data-testid="pw" />
+      </TextField>
+      <p data-testid="state">Value: {name}</p>
+    </>
+  )
+}
+
 function App() {
   const route = useHash().replace(/^#/, '')
   switch (route) {
@@ -68,6 +137,14 @@ function App() {
       return <ButtonDemo />
     case '/toggle-button':
       return <ToggleButtonDemo />
+    case '/checkbox':
+      return <CheckboxDemo />
+    case '/switch':
+      return <SwitchDemo />
+    case '/radio-group':
+      return <RadioGroupDemo />
+    case '/text-field':
+      return <TextFieldDemo />
     default:
       return <Index />
   }

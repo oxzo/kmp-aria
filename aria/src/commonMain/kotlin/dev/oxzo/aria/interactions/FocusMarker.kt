@@ -27,6 +27,13 @@ object AriaDebug {
  * Place BEFORE the focusable modifier in the chain (`Modifier.focusMarker("Bold").ariaPressable(…)`).
  * `contentDescription` crosses the web accessibility mirror as `aria-label`, which is why it
  * is the carrier: it is one of the eleven properties the framework reads.
+ *
+ * The description is written in both states, not only when focused: the 1.12.0 mirror sets
+ * `aria-label` when the property is present and never removes it when the property goes
+ * away (`ComposeWebSemanticsListener.syncNode` has no `removeAttribute` for it), so a
+ * focus-only marker leaves "(focused)" on every node that ever held focus. Overwriting with
+ * the plain name keeps the attribute current. Cost: on marked nodes the accessible name comes
+ * from `aria-label` rather than from content; the string is the same.
  */
 @Composable
 fun Modifier.focusMarker(name: String): Modifier {
@@ -34,5 +41,5 @@ fun Modifier.focusMarker(name: String): Modifier {
     var focused by remember { mutableStateOf(false) }
     return this
         .onFocusChanged { focused = it.isFocused }
-        .semantics { if (focused) contentDescription = "$name (focused)" }
+        .semantics { contentDescription = if (focused) "$name (focused)" else name }
 }

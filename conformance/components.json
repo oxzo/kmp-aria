@@ -14,5 +14,37 @@
     "m3Route": "/m3-toggle-button",
     "testClass": "dev.oxzo.aria.ToggleButtonTest",
     "reference": "https://react-aria.adobe.com/ToggleButton"
+  },
+  {
+    "component": "Checkbox",
+    "tier": 1,
+    "route": "/checkbox",
+    "m3Route": "/m3-checkbox",
+    "testClass": "dev.oxzo.aria.CheckboxTest",
+    "reference": "https://react-aria.adobe.com/Checkbox"
+  },
+  {
+    "component": "Switch",
+    "tier": 1,
+    "route": "/switch",
+    "m3Route": "/m3-switch",
+    "testClass": "dev.oxzo.aria.SwitchTest",
+    "reference": "https://react-aria.adobe.com/Switch"
+  },
+  {
+    "component": "RadioGroup",
+    "tier": 1,
+    "route": "/radio-group",
+    "m3Route": "/m3-radio",
+    "testClass": "dev.oxzo.aria.RadioGroupTest",
+    "reference": "https://react-aria.adobe.com/RadioGroup"
+  },
+  {
+    "component": "TextField",
+    "tier": 1,
+    "route": "/text-field",
+    "m3Route": "/m3-text-field",
+    "testClass": "dev.oxzo.aria.TextFieldTest",
+    "reference": "https://react-aria.adobe.com/TextField"
   }
 ]
