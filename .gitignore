@@ -1,0 +1,26 @@
+# Gradle / Kotlin
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+local.properties
+.kotlin/
+
+# Kotlin/JS — commit kotlin-js-store/yarn.lock for reproducible JS builds;
+# ignore only the build output it may contain.
+kotlin-js-store/**/*.log
+node_modules/
+
+# conformance harness outputs
+conformance/results/
+conformance/test-results/
+conformance/playwright-report/
+conformance/reference/dist/
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+
+# Local-only handoff / scratch notes — durable on disk, never committed
+*.local.md
