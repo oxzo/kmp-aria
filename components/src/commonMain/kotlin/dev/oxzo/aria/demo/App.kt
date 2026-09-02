@@ -1,5 +1,6 @@
 package dev.oxzo.aria.demo
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,10 +13,18 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -44,17 +53,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.oxzo.aria.AriaButton
 import dev.oxzo.aria.AriaCheckbox
+import dev.oxzo.aria.AriaCheckboxGroup
+import dev.oxzo.aria.AriaCheckboxGroupScope
 import dev.oxzo.aria.AriaDisclosure
 import dev.oxzo.aria.AriaLink
 import dev.oxzo.aria.AriaProgressBar
 import dev.oxzo.aria.AriaRadio
 import dev.oxzo.aria.AriaRadioGroup
 import dev.oxzo.aria.AriaRadioGroupScope
+import dev.oxzo.aria.AriaSearchField
 import dev.oxzo.aria.AriaSwitch
 import dev.oxzo.aria.AriaTextField
 import dev.oxzo.aria.AriaToggleButton
+import dev.oxzo.aria.AriaToggleButtonGroup
+import dev.oxzo.aria.AriaToggleButtonGroupScope
 import dev.oxzo.aria.interactions.AriaDebug
 import dev.oxzo.aria.interactions.focusMarker
+import dev.oxzo.aria.stately.SelectionMode
 
 /**
  * Demo routes. One per component, mirrored by `conformance/reference` so the Playwright
@@ -65,19 +80,25 @@ import dev.oxzo.aria.interactions.focusMarker
 val demoRoutes: List<String> = listOf(
     "/button",
     "/toggle-button",
+    "/toggle-button-group",
     "/checkbox",
+    "/checkbox-group",
     "/switch",
     "/radio-group",
     "/text-field",
+    "/search-field",
     "/link",
     "/progress-bar",
     "/disclosure",
     "/m3-button",
     "/m3-toggle-button",
+    "/m3-toggle-button-group",
     "/m3-checkbox",
+    "/m3-checkbox-group",
     "/m3-switch",
     "/m3-radio",
     "/m3-text-field",
+    "/m3-search-field",
     "/fw-link",
     "/m3-progress-bar",
 )
@@ -93,10 +114,13 @@ fun App(route: String) {
             when (route.removePrefix("#")) {
                 "/button" -> ButtonDemo()
                 "/toggle-button" -> ToggleButtonDemo()
+                "/toggle-button-group" -> ToggleButtonGroupDemo()
                 "/checkbox" -> CheckboxDemo()
+                "/checkbox-group" -> CheckboxGroupDemo()
                 "/switch" -> SwitchDemo()
                 "/radio-group" -> RadioGroupDemo()
                 "/text-field" -> TextFieldDemo()
+                "/search-field" -> SearchFieldDemo()
                 "/link" -> LinkDemo()
                 "/progress-bar" -> ProgressBarDemo()
                 "/disclosure" -> DisclosureDemo()
@@ -104,10 +128,13 @@ fun App(route: String) {
                 "/m3-progress-bar" -> M3ProgressBarDemo()
                 "/m3-button" -> M3ButtonDemo()
                 "/m3-checkbox" -> M3CheckboxDemo()
+                "/m3-checkbox-group" -> M3CheckboxGroupDemo()
                 "/m3-radio" -> M3RadioDemo()
                 "/m3-text-field" -> M3TextFieldDemo()
+                "/m3-search-field" -> M3SearchFieldDemo()
                 "/m3-switch" -> M3SwitchDemo()
                 "/m3-toggle-button" -> M3ToggleButtonDemo()
+                "/m3-toggle-button-group" -> M3ToggleButtonGroupDemo()
                 else -> Index()
             }
         }
@@ -156,6 +183,53 @@ private fun ToggleButtonDemo() {
     BasicText(if (selected) "Selected" else "Not selected", modifier = Modifier.testTag("state"), style = label)
 }
 
+private val alignments = listOf("left" to "Left", "center" to "Center", "right" to "Right")
+private val textStyles = listOf("bold" to "Bold", "italic" to "Italic", "underline" to "Underline")
+
+/** Two groups: single selection (radiogroup on the reference) and multiple (toolbar); Underline is disabled. */
+@Composable
+private fun ToggleButtonGroupDemo() {
+    var alignment by remember { mutableStateOf(setOf<String>()) }
+    var styles by remember { mutableStateOf(setOf<String>()) }
+    AriaToggleButtonGroup(
+        selectedKeys = alignment,
+        onSelectionChange = { alignment = it },
+        label = "Text alignment",
+        modifier = Modifier.testTag("align"),
+    ) {
+        alignments.forEach { (id, text) -> GroupItem(id, text) }
+    }
+    AriaToggleButtonGroup(
+        selectedKeys = styles,
+        onSelectionChange = { styles = it },
+        selectionMode = SelectionMode.Multiple,
+        label = "Text style",
+        modifier = Modifier.testTag("style"),
+    ) {
+        textStyles.forEach { (id, text) -> GroupItem(id, text, enabled = id != "underline") }
+    }
+    BasicText(groupState(alignment.firstOrNull(), styles), modifier = Modifier.testTag("state"), style = label)
+}
+
+private fun groupState(alignment: String?, styles: Set<String>): String =
+    "Alignment: ${alignment ?: "none"}; Style: ${styles.joinToString(", ").ifEmpty { "none" }}"
+
+@Composable
+private fun AriaToggleButtonGroupScope.GroupItem(id: String, text: String, enabled: Boolean = true) {
+    val selected = id in selectedKeys
+    AriaToggleButton(
+        id,
+        modifier = Modifier
+            .testTag("tb-$id")
+            .then(if (enabled) Modifier.focusMarker(text) else Modifier)
+            .border(1.dp, if (enabled) Color.Black else Color.Gray)
+            .background(if (selected) Color.LightGray else Color.Transparent),
+        enabled = enabled,
+    ) {
+        BasicText(text, modifier = Modifier.padding(8.dp), style = if (enabled) label else label.copy(color = Color.Gray))
+    }
+}
+
 @Composable
 private fun CheckboxDemo() {
     var selected by remember { mutableStateOf(false) }
@@ -190,6 +264,41 @@ private fun LabelledCheckbox(
                 },
             )
             BasicText(text, style = label)
+        }
+    }
+}
+
+private val interests = listOf("sports" to "Sports", "music" to "Music", "reading" to "Reading")
+
+/** A labelled group of three checkboxes, Reading disabled; the state line keeps press order. */
+@Composable
+private fun CheckboxGroupDemo() {
+    var selected by remember { mutableStateOf(setOf<String>()) }
+    AriaCheckboxGroup(
+        value = selected,
+        onChange = { selected = it },
+        label = "Interests",
+        modifier = Modifier.testTag("group"),
+        labelStyle = label,
+    ) {
+        interests.forEach { (id, text) -> GroupCheckbox(id, text, enabled = id != "reading") }
+    }
+    BasicText(interestsState(selected), modifier = Modifier.testTag("state"), style = label)
+}
+
+private fun interestsState(selected: Set<String>): String = "Selected: ${selected.joinToString(", ").ifEmpty { "none" }}"
+
+@Composable
+private fun AriaCheckboxGroupScope.GroupCheckbox(id: String, text: String, enabled: Boolean) {
+    val on = id in selectedValues
+    AriaCheckbox(
+        id,
+        modifier = Modifier.testTag("cb-$id").then(if (enabled) Modifier.focusMarker(text) else Modifier),
+        enabled = enabled,
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            CheckIndicator(if (on) ToggleableState.On else ToggleableState.Off)
+            BasicText(text, style = if (enabled) label else label.copy(color = Color.Gray))
         }
     }
 }
@@ -291,6 +400,23 @@ private fun TextFieldDemo() {
         textStyle = label,
     )
     BasicText("Value: $name", modifier = Modifier.testTag("state"), style = label)
+}
+
+@Composable
+private fun SearchFieldDemo() {
+    var value by remember { mutableStateOf("") }
+    var submitted by remember { mutableStateOf("") }
+    AriaSearchField(
+        value = value,
+        onValueChange = { value = it },
+        label = "Search",
+        modifier = Modifier.testTag("sf").focusMarker("Search").border(1.dp, Color.Black).padding(4.dp),
+        onSubmit = { submitted = it },
+        textStyle = label,
+        clearButtonModifier = Modifier.testTag("clear").border(1.dp, Color.Black).padding(4.dp),
+    )
+    BasicText("Value: $value", modifier = Modifier.testTag("state"), style = label)
+    BasicText("Submitted: $submitted", modifier = Modifier.testTag("submitted"), style = label)
 }
 
 private val linkStyle = label.copy(textDecoration = TextDecoration.Underline)
@@ -445,4 +571,88 @@ private fun M3ToggleButtonDemo() {
         Text(if (checked) "\u2605" else "\u2606")
     }
     Text(if (checked) "Selected" else "Not selected", modifier = Modifier.testTag("state"))
+}
+
+/** Material3's own grouped toggles: a single-choice and a multi-choice segmented button row. */
+@Composable
+private fun M3ToggleButtonGroupDemo() {
+    var alignment by remember { mutableStateOf<String?>(null) }
+    var styles by remember { mutableStateOf(setOf<String>()) }
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.testTag("align")) {
+        alignments.forEachIndexed { i, (id, text) ->
+            SegmentedButton(
+                selected = alignment == id,
+                onClick = { alignment = if (alignment == id) null else id },
+                shape = SegmentedButtonDefaults.itemShape(i, alignments.size),
+                modifier = Modifier.testTag("tb-$id"),
+            ) { Text(text) }
+        }
+    }
+    MultiChoiceSegmentedButtonRow(modifier = Modifier.testTag("style")) {
+        textStyles.forEachIndexed { i, (id, text) ->
+            SegmentedButton(
+                checked = id in styles,
+                onCheckedChange = { styles = if (it) styles + id else styles - id },
+                shape = SegmentedButtonDefaults.itemShape(i, textStyles.size),
+                enabled = id != "underline",
+                modifier = Modifier.testTag("tb-$id"),
+            ) { Text(text) }
+        }
+    }
+    Text(groupState(alignment, styles), modifier = Modifier.testTag("state"))
+}
+
+/** Material3 has no checkbox group; the control is its Checkboxes in a labelled Column. */
+@Composable
+private fun M3CheckboxGroupDemo() {
+    var selected by remember { mutableStateOf(setOf<String>()) }
+    Column(Modifier.testTag("group")) {
+        Text("Interests")
+        interests.forEach { (id, text) ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = id in selected,
+                    onCheckedChange = { selected = if (it) selected + id else selected - id },
+                    enabled = id != "reading",
+                    modifier = Modifier.testTag("cb-$id"),
+                )
+                Text(text)
+            }
+        }
+    }
+    Text(interestsState(selected), modifier = Modifier.testTag("state"))
+}
+
+/**
+ * Material3's search widget: a collapsed [SearchBar] whose input field carries the framework's
+ * own "Search" content description and submits on the Search IME action; the clear control is a
+ * trailing [IconButton], composed only while the query is non-empty.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun M3SearchFieldDemo() {
+    var query by remember { mutableStateOf("") }
+    var submitted by remember { mutableStateOf("") }
+    SearchBar(
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = query,
+                onQueryChange = { query = it },
+                onSearch = { submitted = it },
+                expanded = false,
+                onExpandedChange = {},
+                modifier = Modifier.testTag("sf"),
+                placeholder = { Text("Search") },
+                trailingIcon = {
+                    if (query.isNotEmpty()) {
+                        IconButton(onClick = { query = "" }, modifier = Modifier.testTag("clear")) { Text("\u2715") }
+                    }
+                },
+            )
+        },
+        expanded = false,
+        onExpandedChange = {},
+    ) {}
+    Text("Value: $query", modifier = Modifier.testTag("state"))
+    Text("Submitted: $submitted", modifier = Modifier.testTag("submitted"))
 }

@@ -109,9 +109,14 @@ node conformance/report.js > CONFORMANCE.md
 ```
 
 Gradle test tasks are UP-TO-DATE after a no-change run. `--rerun` is a per-task option and binds
-to the task named before it, so a forced gate needs it after every test task:
-`gradle :aria:jvmTest --rerun :aria:wasmJsBrowserTest --rerun …`. Write the report to a temp
-file and move it: the redirect truncates `CONFORMANCE.md` before `report.js` runs.
+to the task named before it, so a forced gate needs it after every test task, and after the
+*leaf* task: `:stately:wasmJsTest --rerun` leaves `:stately:wasmJsNodeTest` up to date. The
+honest gate is
+`gradle :stately:jvmTest --rerun :stately:wasmJsNodeTest --rerun :aria:jvmTest --rerun :aria:wasmJsBrowserTest --rerun :components:wasmJsBrowserDistribution`.
+Whether tests ran is read from the `timestamp` in `aria/build/test-results/*/TEST-*.xml`, not
+from the build duration (a cached compile plus executed tests can finish in under 30 s). Write
+the report to a temp file and move it: the redirect truncates `CONFORMANCE.md` before
+`report.js` runs.
 
 ## Status
 
@@ -160,6 +165,24 @@ port at all (below).
   instrument.
 - Bundle 4.51 MB gzipped (skiko unchanged); main Kotlin 1211 lines, 98 % shared.
 
-Not done: the manual Orca pass. Next: the rest of Tier 1 (ToggleButtonGroup, CheckboxGroup,
-SearchField, NumberField, Meter, Separator, Group, Toolbar, Form, DisclosureGroup,
-Breadcrumbs), each with UI tests, a spec, and a row.
+**Session 4 (2026-09-02): ToggleButtonGroup, CheckboxGroup, SearchField.** Twelve rows. Every
+mutation was seen red on both runs of the semantics instrument and on the browser instrument.
+
+- The three group roles (`radiogroup`, `toolbar`, `group`) and `searchbox` never reach the
+  browser, and none of them has a Compose semantics vocabulary or a `jb-main` role id, so no
+  pending release flips them; the items fall to stateless `button`s as before. Material3's
+  segmented button rows, its Checkboxes in a Column and its `SearchBar` do the same, which is
+  what attributes every one of these rows to the framework.
+- Behaviour matched the reference at every step on all three rows: roving focus with arrows
+  that do not wrap and skip disabled items, one tab stop per toggle group, press-ordered
+  checkbox values, Escape-clears / Enter-submits and a clear button outside the tab order.
+- **Keyboard focus that enters the canvas does not leave it.** With a plain button appended
+  after the canvas, Tab and Shift+Tab cycled among the Compose widgets and never reached it
+  (NOTES.md "Session 4"): the scene consumes Tab and `preventDefault`s it.
+- Material3 1.12.0-alpha03 has no Link and no Disclosure widget (verified against its sources
+  jar); `jb-main`'s listener gained a scroll controller since the last check and moved none of
+  the measured properties.
+- Bundle 4.58 MB gzipped (skiko unchanged); main Kotlin 1872 lines, 99 % shared.
+
+Not done: the manual Orca pass. Next: the rest of Tier 1 (NumberField, Meter, Separator, Group,
+Toolbar, Form, DisclosureGroup, Breadcrumbs), each with UI tests, a spec, and a row.

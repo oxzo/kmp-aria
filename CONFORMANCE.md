@@ -30,6 +30,9 @@ field's value is invisible to the instrument although the mirror node carries it
 | Link | 1 | 6/6 | `role link→button "Follow me"` (load, enter, space, click, tab-next, focus); `role link→button "Docs"` (load, enter, space, click, tab-next, focus); `href` (load, enter, space, click, tab-next, focus); `role link→button "Disabled"` (load, enter, space, click, tab-next, focus); `disabled` (load, enter, space, click, tab-next, focus) | roles: button (a nameless one among them); states: none at any step | `role link→button "Follow me"`: framework (mirror never writes role=link; M3 control also lacks role link); `role link→button "Docs"`: framework (mirror never writes role=link; M3 control also lacks role link); `href`: framework (mirror nodes are div elements, no anchor and no href; M3 control also lacks href); `role link→button "Disabled"`: framework (mirror never writes role=link; M3 control also lacks role link); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled) | 1.12.0 |
 | ProgressBar | 1 | 6/6 | `progressbar "Loading"` (load, enter, click, focus); `progressbar "Syncing"` (load, enter, click, focus) | roles: button; states: none at any step | `progressbar "Loading"`: framework (mirror never writes role=progressbar; M3 control also lacks role progressbar); `progressbar "Syncing"`: framework (mirror never writes role=progressbar; M3 control also lacks role progressbar) | 1.12.0 |
 | Disclosure | 1 | 7/7 | `level` (load, enter, space, click, focus); `expanded` (enter, click); `group "System Requirements"` (enter, click) | no M3 control | `level`: framework (mirror writes no aria-level); `expanded`: framework (mirror writes no aria-expanded); `group "System Requirements"`: unattributed (mirror never writes role=group) | 1.12.0 |
+| ToggleButtonGroup | 1 | 15/15 | `radiogroup "Text alignment"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `role radio→button "Left"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `role radio→button "Center"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `role radio→button "Right"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `toolbar "Text style"` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `disabled` (load, space, right, space-center, enter, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out, focus); `checked` (space, right, space-center, click, tab-next, space-bold, right-italic, space-italic, right-edge, tab-out); `pressed` (space-bold, right-italic, space-italic, right-edge, tab-out) | roles: button; states: none at any step | `radiogroup "Text alignment"`: framework (mirror never writes role=radiogroup; M3 control also lacks role radiogroup); `role radio→button "Left"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Center"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `role radio→button "Right"`: framework (mirror never writes role=radio; M3 control also lacks role radio); `toolbar "Text style"`: framework (mirror never writes role=toolbar; M3 control also lacks role toolbar); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected); `pressed`: framework (mirror writes no aria-pressed; M3 control also lacks pressed/checked/selected) | 1.12.0 |
+| CheckboxGroup | 1 | 9/9 | `group "Interests"` (load, space, tab-music, space-music, enter, click, focus); `role checkbox→button "Sports"` (load, space, tab-music, space-music, enter, click, focus); `role checkbox→button "Music"` (load, space, tab-music, space-music, enter, click, focus); `role checkbox→button "Reading"` (load, space, tab-music, space-music, enter, click, focus); `disabled` (load, space, tab-music, space-music, enter, click, focus); `checked` (space, tab-music, space-music, enter, click) | roles: button (a nameless one among them); states: none at any step | `group "Interests"`: framework (mirror never writes role=group; M3 control also lacks role group); `role checkbox→button "Sports"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `role checkbox→button "Music"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `role checkbox→button "Reading"`: framework (mirror never writes role=checkbox; M3 control also lacks role checkbox); `disabled`: framework (mirror writes no aria-disabled; M3 control also lacks disabled); `checked`: framework (mirror writes no aria-checked; M3 control also lacks pressed/checked/selected) | 1.12.0 |
+| SearchField | 1 | 10/10 | `role searchbox→textbox "Search"` (load, type, escape, type-again, enter, click-clear, focus) | roles: textbox, button (a nameless one among them); states: none at any step | `role searchbox→textbox "Search"`: framework (mirror never writes role=searchbox; M3 control also lacks role searchbox) | 1.12.0 |
 
 ## Framework controls recorded without a port counterpart
 
@@ -42,7 +45,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 | M3 Button | `#/m3-button` | button | "Press me", "Disabled" | none at any step | "Pressed 0 times", "Pressed 1 times", "Pressed 2 times" | 1.12.0 |
 | M3 IconToggleButton | `#/m3-toggle-button` | button | "☆", "★" | none at any step | "Not selected", "Selected" | 1.12.0 |
 
-<details><summary>M3 Button snapshots (recorded 2026-09-02T09:05:02.746Z)</summary>
+<details><summary>M3 Button snapshots (recorded 2026-09-02T13:13:23.922Z)</summary>
 
 
 **load**
@@ -87,7 +90,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 </details>
 
-<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T09:04:56.592Z)</summary>
+<details><summary>M3 IconToggleButton snapshots (recorded 2026-09-02T13:13:17.766Z)</summary>
 
 
 **load**
@@ -132,7 +135,7 @@ step. A ladder row for the matching React Aria component replaces the entry here
 
 ### Button
 
-Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T09:03:51.529Z
+Reference: https://react-aria.adobe.com/Button · route `#/button` · M3 control `#/m3-button` · recorded 2026-09-02T13:11:44.582Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -289,7 +292,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### ToggleButton
 
-Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T09:06:54.361Z
+Reference: https://react-aria.adobe.com/ToggleButton · route `#/toggle-button` · M3 control `#/m3-toggle-button` · recorded 2026-09-02T13:16:33.533Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -429,7 +432,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Checkbox
 
-Reference: https://react-aria.adobe.com/Checkbox · route `#/checkbox` · M3 control `#/m3-checkbox` · recorded 2026-09-02T09:04:12.417Z
+Reference: https://react-aria.adobe.com/Checkbox · route `#/checkbox` · M3 control `#/m3-checkbox` · recorded 2026-09-02T13:12:33.607Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -606,7 +609,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Switch
 
-Reference: https://react-aria.adobe.com/Switch · route `#/switch` · M3 control `#/m3-switch` · recorded 2026-09-02T09:06:09.001Z
+Reference: https://react-aria.adobe.com/Switch · route `#/switch` · M3 control `#/m3-switch` · recorded 2026-09-02T13:14:58.316Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -751,7 +754,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### RadioGroup
 
-Reference: https://react-aria.adobe.com/RadioGroup · route `#/radio-group` · M3 control `#/m3-radio` · recorded 2026-09-02T09:05:48.132Z
+Reference: https://react-aria.adobe.com/RadioGroup · route `#/radio-group` · M3 control `#/m3-radio` · recorded 2026-09-02T13:14:09.297Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1046,7 +1049,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### TextField
 
-Reference: https://react-aria.adobe.com/TextField · route `#/text-field` · M3 control `#/m3-text-field` · recorded 2026-09-02T09:06:33.497Z
+Reference: https://react-aria.adobe.com/TextField · route `#/text-field` · M3 control `#/m3-text-field` · recorded 2026-09-02T13:15:22.828Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1256,7 +1259,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Link
 
-Reference: https://react-aria.adobe.com/Link · route `#/link` · M3 control `#/fw-link` (Material3 has no link widget; the control is foundation's own link path, a LinkAnnotation.Clickable inside BasicText) · recorded 2026-09-02T09:04:50.443Z
+Reference: https://react-aria.adobe.com/Link · route `#/link` · M3 control `#/fw-link` (Material3 has no link widget; the control is foundation's own link path, a LinkAnnotation.Clickable inside BasicText) · recorded 2026-09-02T13:13:11.620Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1456,7 +1459,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### ProgressBar
 
-Reference: https://react-aria.adobe.com/ProgressBar · route `#/progress-bar` · M3 control `#/m3-progress-bar` · recorded 2026-09-02T09:17:21.407Z
+Reference: https://react-aria.adobe.com/ProgressBar · route `#/progress-bar` · M3 control `#/m3-progress-bar` · recorded 2026-09-02T13:13:41.176Z
 
 Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1593,7 +1596,7 @@ Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 control
 
 ### Disclosure
 
-Reference: https://react-aria.adobe.com/Disclosure · route `#/disclosure` · recorded 2026-09-02T09:04:25.941Z
+Reference: https://react-aria.adobe.com/Disclosure · route `#/disclosure` · recorded 2026-09-02T13:12:47.126Z
 
 Tabs until the widget reported focus: reference 1, compose 2 (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
 
@@ -1695,6 +1698,1065 @@ Tabs until the widget reported focus: reference 1, compose 2 (M3 controls carry 
 - heading "System Requirements (focused)":
   - button "System Requirements (focused)": System Requirements
 - text: Details about system requirements here. Expanded
+```
+
+</details>
+
+### ToggleButtonGroup
+
+Reference: https://react-aria.adobe.com/ToggleButtonGroup · route `#/toggle-button-group` · M3 control `#/m3-toggle-button-group` · recorded 2026-09-02T13:16:12.675Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right"
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: none; Style: none"
+```
+
+**tab1** (focused: Left)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right"
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: none; Style: none"
+```
+
+**space** (focused: Left)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left" [checked]
+  - radio "Center"
+  - radio "Right"
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: left; Style: none"
+```
+
+**right** (focused: Center)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left" [checked]
+  - radio "Center"
+  - radio "Right"
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: left; Style: none"
+```
+
+**space-center** (focused: Center)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center" [checked]
+  - radio "Right"
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: center; Style: none"
+```
+
+**enter** (focused: Center)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right"
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: none; Style: none"
+```
+
+**click** (focused: Right)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right" [checked]
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: right; Style: none"
+```
+
+**tab-next** (focused: Bold)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right" [checked]
+- toolbar "Text style":
+  - button "Bold"
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: right; Style: none"
+```
+
+**space-bold** (focused: Bold)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right" [checked]
+- toolbar "Text style":
+  - button "Bold" [pressed]
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: right; Style: bold"
+```
+
+**right-italic** (focused: Italic)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right" [checked]
+- toolbar "Text style":
+  - button "Bold" [pressed]
+  - button "Italic"
+  - button "Underline" [disabled]
+- paragraph: "Alignment: right; Style: bold"
+```
+
+**space-italic** (focused: Italic)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right" [checked]
+- toolbar "Text style":
+  - button "Bold" [pressed]
+  - button "Italic" [pressed]
+  - button "Underline" [disabled]
+- paragraph: "Alignment: right; Style: bold, italic"
+```
+
+**right-edge** (focused: Italic)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right" [checked]
+- toolbar "Text style":
+  - button "Bold" [pressed]
+  - button "Italic" [pressed]
+  - button "Underline" [disabled]
+- paragraph: "Alignment: right; Style: bold, italic"
+```
+
+**tab-out** (focused: none)
+
+```yaml
+- radiogroup "Text alignment":
+  - radio "Left"
+  - radio "Center"
+  - radio "Right" [checked]
+- toolbar "Text style":
+  - button "Bold" [pressed]
+  - button "Italic" [pressed]
+  - button "Underline" [disabled]
+- paragraph: "Alignment: right; Style: bold, italic"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**tab2** (focused: Left)
+
+```yaml
+- button "Left (focused)": Left
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**space** (focused: Left)
+
+```yaml
+- button "Left (focused)": Left
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: left; Style: none"
+```
+
+**right** (focused: Center)
+
+```yaml
+- button "Left"
+- button "Center (focused)": Center
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: left; Style: none"
+```
+
+**space-center** (focused: Center)
+
+```yaml
+- button "Left"
+- button "Center (focused)": Center
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: center; Style: none"
+```
+
+**enter** (focused: Center)
+
+```yaml
+- button "Left"
+- button "Center (focused)": Center
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**click** (focused: Right)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right (focused)": Right
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: right; Style: none"
+```
+
+**tab-next** (focused: Bold)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold (focused)": Bold
+- button "Italic"
+- button "Underline"
+- text: "Alignment: right; Style: none"
+```
+
+**space-bold** (focused: Bold)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold (focused)": Bold
+- button "Italic"
+- button "Underline"
+- text: "Alignment: right; Style: bold"
+```
+
+**right-italic** (focused: Italic)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic (focused)": Italic
+- button "Underline"
+- text: "Alignment: right; Style: bold"
+```
+
+**space-italic** (focused: Italic)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic (focused)": Italic
+- button "Underline"
+- text: "Alignment: right; Style: bold, italic"
+```
+
+**right-edge** (focused: Italic)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic (focused)": Italic
+- button "Underline"
+- text: "Alignment: right; Style: bold, italic"
+```
+
+**tab-out** (focused: Right)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right (focused)": Right
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: right; Style: bold, italic"
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- button "Center"
+- button "Right"
+- button "Left"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**space** (focused: none)
+
+```yaml
+- button "Center"
+- button "Right"
+- button "Left"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: left; Style: none"
+```
+
+**right** (focused: none)
+
+```yaml
+- button "Center"
+- button "Right"
+- button "Left"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: left; Style: none"
+```
+
+**space-center** (focused: none)
+
+```yaml
+- button "Center"
+- button "Right"
+- button "Left"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: none; Style: none"
+```
+
+**enter** (focused: none)
+
+```yaml
+- button "Center"
+- button "Right"
+- button "Left"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: left; Style: none"
+```
+
+**click** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Italic"
+- button "Underline"
+- text: "Alignment: right; Style: none"
+```
+
+**tab-next** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Italic"
+- button "Underline"
+- button "Bold"
+- text: "Alignment: right; Style: none"
+```
+
+**space-bold** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Italic"
+- button "Underline"
+- button "Bold"
+- text: "Alignment: right; Style: bold"
+```
+
+**right-italic** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Italic"
+- button "Underline"
+- button "Bold"
+- text: "Alignment: right; Style: bold"
+```
+
+**space-italic** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Italic"
+- button "Underline"
+- button "Bold"
+- text: "Alignment: right; Style: none"
+```
+
+**right-edge** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Italic"
+- button "Underline"
+- button "Bold"
+- text: "Alignment: right; Style: none"
+```
+
+**tab-out** (focused: none)
+
+```yaml
+- button "Left"
+- button "Center"
+- button "Right"
+- button "Bold"
+- button "Underline"
+- button "Italic"
+- text: "Alignment: right; Style: none"
+```
+
+</details>
+
+### CheckboxGroup
+
+Reference: https://react-aria.adobe.com/CheckboxGroup · route `#/checkbox-group` · M3 control `#/m3-checkbox-group` (Material3 has no checkbox group widget; the control is its Checkboxes in a Column) · recorded 2026-09-02T13:12:12.730Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- group "Interests":
+  - text: Interests
+  - checkbox "Sports"
+  - text: Sports
+  - checkbox "Music"
+  - text: Music
+  - checkbox "Reading" [disabled]
+  - text: Reading
+- paragraph: "Selected: none"
+```
+
+**tab1** (focused: Sports)
+
+```yaml
+- group "Interests":
+  - text: Interests
+  - checkbox "Sports"
+  - text: Sports
+  - checkbox "Music"
+  - text: Music
+  - checkbox "Reading" [disabled]
+  - text: Reading
+- paragraph: "Selected: none"
+```
+
+**space** (focused: Sports)
+
+```yaml
+- group "Interests":
+  - text: Interests
+  - checkbox "Sports" [checked]
+  - text: Sports
+  - checkbox "Music"
+  - text: Music
+  - checkbox "Reading" [disabled]
+  - text: Reading
+- paragraph: "Selected: sports"
+```
+
+**tab-music** (focused: Music)
+
+```yaml
+- group "Interests":
+  - text: Interests
+  - checkbox "Sports" [checked]
+  - text: Sports
+  - checkbox "Music"
+  - text: Music
+  - checkbox "Reading" [disabled]
+  - text: Reading
+- paragraph: "Selected: sports"
+```
+
+**space-music** (focused: Music)
+
+```yaml
+- group "Interests":
+  - text: Interests
+  - checkbox "Sports" [checked]
+  - text: Sports
+  - checkbox "Music" [checked]
+  - text: Music
+  - checkbox "Reading" [disabled]
+  - text: Reading
+- paragraph: "Selected: sports, music"
+```
+
+**enter** (focused: Music)
+
+```yaml
+- group "Interests":
+  - text: Interests
+  - checkbox "Sports" [checked]
+  - text: Sports
+  - checkbox "Music" [checked]
+  - text: Music
+  - checkbox "Reading" [disabled]
+  - text: Reading
+- paragraph: "Selected: sports, music"
+```
+
+**click** (focused: Sports)
+
+```yaml
+- group "Interests":
+  - text: Interests
+  - checkbox "Sports"
+  - text: Sports
+  - checkbox "Music" [checked]
+  - text: Music
+  - checkbox "Reading" [disabled]
+  - text: Reading
+- paragraph: "Selected: music"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Interests
+- button "Sports"
+- button "Music"
+- button "Reading"
+- text: "Selected: none"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Interests
+- button "Sports"
+- button "Music"
+- button "Reading"
+- text: "Selected: none"
+```
+
+**tab2** (focused: Sports)
+
+```yaml
+- text: Interests
+- button "Sports (focused)": Sports
+- button "Music"
+- button "Reading"
+- text: "Selected: none"
+```
+
+**space** (focused: Sports)
+
+```yaml
+- text: Interests
+- button "Sports (focused)": Sports
+- button "Music"
+- button "Reading"
+- text: "Selected: sports"
+```
+
+**tab-music** (focused: Music)
+
+```yaml
+- text: Interests
+- button "Sports"
+- button "Music (focused)": Music
+- button "Reading"
+- text: "Selected: sports"
+```
+
+**space-music** (focused: Music)
+
+```yaml
+- text: Interests
+- button "Sports"
+- button "Music (focused)": Music
+- button "Reading"
+- text: "Selected: sports, music"
+```
+
+**enter** (focused: Music)
+
+```yaml
+- text: Interests
+- button "Sports"
+- button "Music (focused)": Music
+- button "Reading"
+- text: "Selected: sports, music"
+```
+
+**click** (focused: Sports)
+
+```yaml
+- text: Interests
+- button "Sports (focused)": Sports
+- button "Music"
+- button "Reading"
+- text: "Selected: music"
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: none"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: none"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: none"
+```
+
+**space** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: sports"
+```
+
+**tab-music** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: sports"
+```
+
+**space-music** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: sports, music"
+```
+
+**enter** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: sports"
+```
+
+**click** (focused: none)
+
+```yaml
+- text: Interests
+- button
+- text: Sports
+- button
+- text: Music
+- button
+- text: "Reading Selected: none"
+```
+
+</details>
+
+### SearchField
+
+Reference: https://react-aria.adobe.com/SearchField · route `#/search-field` · M3 control `#/m3-search-field` (Material3's SearchBar with SearchBarDefaults.InputField, collapsed; its clear control is a trailing IconButton) · recorded 2026-09-02T13:14:37.446Z
+
+Tabs until the widget reported focus: reference 1, compose 2, m3 n/a (M3 controls carry no focus marker, so n/a there is unobservable, not a failure).
+
+<details><summary>reference snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Search
+- searchbox "Search"
+- paragraph: "Value:"
+- paragraph: "Submitted:"
+```
+
+**tab1** (focused: Search)
+
+```yaml
+- text: Search
+- searchbox "Search"
+- paragraph: "Value:"
+- paragraph: "Submitted:"
+```
+
+**type** (focused: Search)
+
+```yaml
+- text: Search
+- searchbox "Search": kotlin
+- button "Clear search": ✕
+- paragraph: "Value: kotlin"
+- paragraph: "Submitted:"
+```
+
+**escape** (focused: Search)
+
+```yaml
+- text: Search
+- searchbox "Search"
+- paragraph: "Value:"
+- paragraph: "Submitted:"
+```
+
+**type-again** (focused: Search)
+
+```yaml
+- text: Search
+- searchbox "Search": compose
+- button "Clear search": ✕
+- paragraph: "Value: compose"
+- paragraph: "Submitted:"
+```
+
+**enter** (focused: Search)
+
+```yaml
+- text: Search
+- searchbox "Search": compose
+- button "Clear search": ✕
+- paragraph: "Value: compose"
+- paragraph: "Submitted: compose"
+```
+
+**click-clear** (focused: Search)
+
+```yaml
+- text: Search
+- searchbox "Search"
+- paragraph: "Value:"
+- paragraph: "Submitted: compose"
+```
+
+</details>
+
+<details><summary>compose snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: Search
+- textbox "Search"
+- text: "Value: Submitted:"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: Search
+- textbox "Search"
+- text: "Value: Submitted:"
+```
+
+**tab2** (focused: Search)
+
+```yaml
+- text: Search
+- textbox "Search (focused)"
+- text: "Value: Submitted:"
+- textbox
+```
+
+**type** (focused: Search)
+
+```yaml
+- text: Search
+- textbox "Search (focused)"
+- button "Clear search": ✕
+- text: "Value: kotlin Submitted:"
+- textbox: kotlin
+```
+
+**escape** (focused: Search)
+
+```yaml
+- text: Search
+- textbox "Search (focused)"
+- text: "Value: Submitted:"
+- textbox
+```
+
+**type-again** (focused: Search)
+
+```yaml
+- text: Search
+- textbox "Search (focused)"
+- button "Clear search": ✕
+- text: "Value: compose Submitted:"
+- textbox: compose
+```
+
+**enter** (focused: Search)
+
+```yaml
+- text: Search
+- textbox "Search (focused)"
+- button "Clear search": ✕
+- text: "Value: compose Submitted: compose"
+- textbox: compose
+```
+
+**click-clear** (focused: Search)
+
+```yaml
+- text: Search
+- textbox "Search (focused)"
+- text: "Value: Submitted: compose"
+- textbox
+```
+
+</details>
+
+<details><summary>m3 snapshots</summary>
+
+
+**load** (focused: none)
+
+```yaml
+- text: "Value: Submitted:"
+- textbox "Search"
+```
+
+**tab1** (focused: none)
+
+```yaml
+- text: "Value: Submitted:"
+- textbox "Search"
+```
+
+**tab2** (focused: none)
+
+```yaml
+- text: "Value: Submitted:"
+- textbox "Search"
+- textbox
+```
+
+**type** (focused: none)
+
+```yaml
+- text: "Value: kotlin Submitted:"
+- textbox "Search":
+  - button "✕"
+- textbox: kotlin
+```
+
+**escape** (focused: none)
+
+```yaml
+- text: "Value: kotlin Submitted:"
+- textbox "Search":
+  - button "✕"
+- textbox: kotlin
+```
+
+**type-again** (focused: none)
+
+```yaml
+- text: "Value: kotlincompose Submitted:"
+- textbox "Search":
+  - button "✕"
+- textbox: kotlincompose
+```
+
+**enter** (focused: none)
+
+```yaml
+- text: "Value: kotlincompose Submitted: kotlincompose"
+- textbox "Search":
+  - button "✕"
+- textbox: kotlincompose
+```
+
+**click-clear** (focused: none)
+
+```yaml
+- text: "Value: Submitted: kotlincompose"
+- textbox "Search"
 ```
 
 </details>

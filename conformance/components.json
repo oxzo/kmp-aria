@@ -70,5 +70,31 @@
     "route": "/disclosure",
     "testClass": "dev.oxzo.aria.DisclosureTest",
     "reference": "https://react-aria.adobe.com/Disclosure"
+  },
+  {
+    "component": "ToggleButtonGroup",
+    "tier": 1,
+    "route": "/toggle-button-group",
+    "m3Route": "/m3-toggle-button-group",
+    "testClass": "dev.oxzo.aria.ToggleButtonGroupTest",
+    "reference": "https://react-aria.adobe.com/ToggleButtonGroup"
+  },
+  {
+    "component": "CheckboxGroup",
+    "tier": 1,
+    "route": "/checkbox-group",
+    "m3Route": "/m3-checkbox-group",
+    "controlNote": "Material3 has no checkbox group widget; the control is its Checkboxes in a Column",
+    "testClass": "dev.oxzo.aria.CheckboxGroupTest",
+    "reference": "https://react-aria.adobe.com/CheckboxGroup"
+  },
+  {
+    "component": "SearchField",
+    "tier": 1,
+    "route": "/search-field",
+    "m3Route": "/m3-search-field",
+    "controlNote": "Material3's SearchBar with SearchBarDefaults.InputField, collapsed; its clear control is a trailing IconButton",
+    "testClass": "dev.oxzo.aria.SearchFieldTest",
+    "reference": "https://react-aria.adobe.com/SearchField"
   }
 ]

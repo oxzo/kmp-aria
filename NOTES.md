@@ -395,6 +395,173 @@ Restored and re-run clean (JVM, wasmJs, browser) before CONFORMANCE.md was gener
 - LOC (`.logs/metric7-loc-s3.txt`): main Kotlin 1211, commonMain 1188 (98 % shared); `aria`
   714 main and 804 test; conformance 1129 lines of TS/JS.
 
+## Session 4 — 2026-09-02
+
+### The build
+
+The gate with `--rerun` after every test task executed the 53 UI tests (XML 15:38:15) and the
+six stately tests; the Playwright gate (28 targets, 15:41:34 → 15:45:01) reproduced the nine
+committed rows apart from the recorded timestamps (zero non-timestamp diff lines). Three
+components, thirty-four new UI tests and five state tests: ToggleButtonGroup (15 + 5) and
+CheckboxGroup (9) went first-try green on the JVM and on wasmJs; SearchField (10) needed two
+compile fixes before its first run (a lambda whose last expression was `onClear?.invoke()` had
+type `() -> Unit?`; `assertExists` and `assertDoesNotExist` are members, not imports), then went
+green on both. Neither the harness nor the report changed this session; no spec helper was
+touched. From the gate's tests (15:38) to the final gate (16:10:43) is thirty-two minutes of wall
+clock, three of them Kotlin fixes; the commit time closes the session.
+
+What fought back was Gradle, once more, and the build cache once:
+
+- **`--rerun` on an aggregate does not reach its leaf.** `:stately:wasmJsTest --rerun` left
+  `:stately:wasmJsNodeTest` UP-TO-DATE in the final gate (`.logs/60-final-gate-gradle.log`); the
+  leaf was forced separately (`.logs/60b-stately-wasm-node-rerun.log`, XML 13:11:16Z). The honest
+  gate names the leaf test tasks: `:stately:jvmTest`, `:stately:wasmJsNodeTest`, `:aria:jvmTest`,
+  `:aria:wasmJsBrowserTest`, each followed by `--rerun`.
+- **A clean rebuild of byte-identical sources compiles FROM-CACHE and still runs the tests.**
+  After the ToggleButtonGroup mutation was reverted from the scratchpad copies, `compileKotlin*`
+  came from the build cache while the four test tasks executed (`.logs/49-clean-rebuild.log`;
+  XML timestamps 12:55:03Z–12:55:05Z, 29 s total). The tell that tests ran is the XML
+  `timestamp` attribute, not the build duration.
+
+### What the browser received (attribution, metric 8)
+
+- **ToggleButtonGroup: `radiogroup`, `toolbar`, `radio→button` three times, `checked`,
+  `pressed`, `disabled`.** The demo carries both selection modes (a single-selection "Text
+  alignment" group, which react-aria renders as `radiogroup` with `radio` items and
+  `aria-checked`, and a multiple-selection "Text style" group, rendered as `toolbar` with
+  `button` items and `aria-pressed`; `useToggleButtonGroup` over `useToolbar`, confirmed in
+  `react-aria/dist/private/button/useToggleButtonGroup.mjs`). Compose has no vocabulary for any
+  of the three group roles: `SelectableGroup` is not read by the listener (session 2), and
+  neither 1.12.0's `AriaRoleId` nor today's `jb-main` copy has an id for `radiogroup`,
+  `toolbar` or `group` (`.logs/A11YImplementationUtils.kt` lines 48–65: Button … DropdownList,
+  Heading, TextBox, List, Grid, Dialog, Link). The role collapse makes every item a `button`
+  and the state family is dropped as before. The control column is Material3's
+  `SingleChoiceSegmentedButtonRow` and `MultiChoiceSegmentedButtonRow` (`SegmentedButton.kt` in
+  the material3 1.12.0-alpha03 sources: `selectableGroup()` on the single-choice row,
+  `Role.RadioButton` on its items, `toggleable` on the multi-choice items), which arrive as six
+  stateless `button`s; so every item is **framework**. Behaviour matched the reference at every
+  step: Space selects, ArrowRight moves focus without selecting, Space on the new item replaces
+  the selection, Enter deselects, click selects, one Tab leaves the first group for Bold, the
+  style group accumulates, ArrowRight from Italic stays on Italic (Underline disabled, no wrap).
+  A footnote from the M3 snapshots: the segmented buttons' mirror order changes with focus and
+  selection (`Center, Right, Left` after the first Tab), because `SegmentedButton` raises the
+  selected or interacted item's z-index (`interactionZIndex`) and the semantics tree is z-sorted.
+- **CheckboxGroup: `group "Interests"`, `checkbox→button` three times, `checked`, `disabled`.**
+  `useCheckboxGroup` gives the group `role="group"` labelled by its `Label`; Compose has no group
+  role (above) and the label lands as `aria-label` on a role-less `div`, exactly as the
+  RadioGroup's did. The control is Material3's `Checkbox`es in a `Column` (there is no Material3
+  group widget; `components.json` says so in `controlNote`), which is what makes the group role
+  attributable as **framework** rather than `unattributed`, the gap the session-3 Disclosure row
+  left. The M3 checkboxes are nameless and toggled on Enter at the `enter` step
+  (`Selected: sports` after `sports, music`), the session-2 finding again; the port kept its
+  state on Enter, as the reference did. Values keep press order on both.
+- **SearchField: `searchbox→textbox "Search"`, nothing else.** `useSearchField` renders
+  `<input type="search">`; Compose has no search role, and Material3's own `SearchBar` input
+  arrives as `textbox "Search"` too (its `InputField` sets a `contentDescription` of its own,
+  `SearchBar.kt` line 2170), so **framework**. Everything else crossed: the field named by its
+  label, the clear button as `button "Clear search"` (its `contentDescription`; the reference's
+  `aria-label` from `clearButtonProps`), present only while the value is non-empty on both
+  sides; Escape cleared, Enter submitted without clearing, the pointer click on the clear
+  button cleared and left the value line empty while the submitted line kept "compose". As on
+  the TextField row, Compose's backing `<input>` shows as a second nameless `textbox` holding
+  the typed text. The M3 `SearchBar` control differs in behaviour by design: Escape does not
+  clear (the value stayed "kotlin" and the second typing produced "kotlincompose"), the IME
+  Search action submits, and its clear `IconButton` is a nameless `button "✕"` nested inside
+  the textbox node.
+- **Focus.** Two Tabs on Compose, one on the reference, on all three rows.
+
+### Tab cannot leave the canvas (the session-2 question, answered on 1.12.0)
+
+Measured with a plain `<button id="after-canvas">` appended after `#composeApp` at runtime
+(`.logs/51-tabwrap.log`, script kept out of the repo; `index.html` untouched). On
+`#/toggle-button-group` the first Tab focused the container `div` with no widget marked, the
+second Left, then Bold, Left, Bold, Left; three Shift+Tabs went Bold, Left, Bold.
+`document.activeElement` was the container `div` on every press and never the injected button.
+On `#/button` (one tab stop) every Tab and Shift+Tab kept "Press me". Mechanism in the 1.12.0
+sources: `ComposeWindowInternal.web.kt` `processKeyboardEvent` calls `preventDefault()` on any
+key the scene consumed (line 385), and the scene consumes Tab for its own traversal, which wraps
+inside the scene; the backing text input does the same for Tab explicitly
+(`DomInputStrategy.kt` lines 82–91, "Compose logic will handle the focus movement"). Once
+keyboard focus is inside the canvas, Tab and Shift+Tab do not take it out. Measured in
+Chromium through Playwright key presses on two demo pages; the ceiling note's "Tab wraps" bullet
+can drop its hedge for 1.12.0, and whether the tracker's resolved tab-focus issues (CMP-9388,
+CMP-10554, listed there) describe this case was not read this session.
+
+### Two unverified specifics from session 3, now checked
+
+- **Material3 1.12.0-alpha03 has no Link and no Disclosure widget.** The
+  `material3-wasm-js-1.12.0-alpha03-sources.jar` was fetched from Maven Central into `.logs/`
+  and unpacked to `.logs/src-material3-1.12.0-alpha03/` (355 Kotlin files). `grep -rln -E
+  'Disclosure|fun [A-Za-z]*Link[A-Za-z]*\('` over `commonMain` matches only `Text.kt`, which
+  styles `LinkAnnotation`s inside text. What it does have, and this session used:
+  `SegmentedButton.kt`, `ButtonGroup.kt`, `SearchBar.kt`.
+- **Compose release watch.** 1.12.0 is still the latest (`maven-metadata.xml` for `ui`:
+  `<latest>1.12.0</latest>`, `lastUpdated 20260825095827`, checked 16:05). The `jb-main`
+  `ComposeWebSemanticsListener.kt` has changed since the copy in `.logs/` (23461 → 25985 bytes;
+  new copy saved as `ComposeWebSemanticsListener.jb-main-2026-09-02T1605.kt`): an
+  `A11YScrollController` for scroll synchronization and positioning, and `aria-live="off"` on
+  `list` and `grid` nodes. None of the measured properties moved: still no `aria-checked`,
+  `aria-pressed`, `aria-expanded` or `aria-value*`; `aria-disabled` still written; `aria-label`
+  still never removed. `A11YImplementationUtils.kt` is byte-identical to the earlier copy.
+
+### Mutation checks (seen red before any row counted)
+
+Records: `.logs/47-mutation-tbg.md` and `.logs/58-mutation-cbg-sf.md`.
+
+1. ToggleButtonGroup, one build with the arrow dispatch removed and single-mode `toggleKey`
+   never deselecting: `ToggleButtonGroupTest` 9/15 on JVM and wasmJs (six named failures, the
+   same on both), `ToggleGroupStateTest` 4/5 on JVM and wasmJs-node; browser: behaviour `9/15`,
+   three state-line texts missing (`space-center`, `enter`, and `space-italic` onward), the
+   Compose snapshots showing focus stuck on Left and the style group toggling Bold off.
+2. CheckboxGroup (deselect never removes) and SearchField (Enter consumed without submit), one
+   build: `CheckboxGroupTest` 8/9 and `SearchFieldTest` 9/10 on JVM and wasmJs; browser:
+   `text "Selected: music"` missing at `click`, `text "Submitted: compose"` missing at `enter`
+   and `click-clear`.
+
+Both builds restored from scratchpad copies (`grep MUTATION` clean) and re-run green on JVM,
+wasmJs and browser before the rows were generated.
+
+### Substitutions and cuts
+
+- **ToggleButtonGroup** builds its single tab stop from the `AriaRadioGroup` plumbing (only the
+  last focused item is focusable) rather than react-aria's tabbable-all-plus-edge-jump; the
+  observable contract is the same except that Shift+Tab into a never-focused group lands on the
+  first item here and the last there. The grouped item is an overload,
+  `AriaToggleButtonGroupScope.AriaToggleButton(id)`, mirroring how the reference's `ToggleButton`
+  joins a group through context. The selection rule is a pure `toggleKey` in `stately`, shared
+  by the composable and by `ToggleGroupState`; the state class notifies only when the set changes,
+  where react-stately rebuilds a `Set` on every toggle. Not measured in the browser: RTL, vertical
+  orientation, `disallowEmptySelection` (semantics instrument only).
+- **CheckboxGroup** takes an insertion-ordered `Set<String>` for the reference's `string[]`;
+  an invalid group marks each checkbox with `Error` and the group with the message (semantics
+  only); no `aria-describedby` (Compose has no id association); description and error are not in
+  the demo.
+- **SearchField**'s clear button is unfocusable, not merely excluded from the tab order (the
+  session-2 "no focusable-but-not-tabbable state" cut again), which also keeps a pointer press
+  from moving focus off the field; it is not composed while the value is empty, where the
+  reference's starter hides it with CSS. `type="search"` has no Compose equivalent beyond
+  `ImeAction.Search`. The Material3 control uses the `@ExperimentalMaterial3Api` String-based
+  `SearchBarDefaults.InputField` overload, collapsed.
+- **Gate:** `--rerun` after every leaf test task (`:stately:wasmJsNodeTest`, not the
+  `wasmJsTest` aggregate).
+- Manual Orca pass: **still not done.** It now has two groups, a checkbox group and a search
+  field to listen to.
+
+### Metrics (session 4)
+
+- Truth run: 87 UI tests on wasmJs in Chrome plus the distribution, 27 s with the compile
+  cached (`.logs/60-final-gate-gradle.log`, 16:10:16 → 16:10:43); 11 stately tests on JVM and
+  wasmJs-node.
+- Browser instrument: 37 targets, 5.2 min (`.logs/61-final-playwright.log`, 16:11:20 →
+  16:16:33); all twelve rows came out identical to their first recordings apart from the
+  timestamps, and the nine session-1-to-3 rows identical to the committed file.
+- Bundle (`.logs/metric5-bundle-s4.txt`): 4.58 MB gzipped, of which the app `.wasm` 1.15 MB
+  (was 1.08), skiko 3.33 MB (unchanged), JS 0.10 MB. The +0.07 MB is three ports plus the
+  Material3 segmented button rows, `SearchBar` and the checkbox column, not separated. The
+  reference Vite bundle is 0.09 MB gzipped, apples to oranges.
+- LOC (`.logs/metric7-loc-s4.txt`): main Kotlin 1872 (was 1211), commonMain 1849 (99 % shared);
+  `aria` 1119 main and 1292 test; `stately` 112 and 116; conformance 1370 lines of TS/JS.
+
 ## Would I pick this for real work
 
 Not yet an opinion with enough behind it. Two components in, the developer experience is
@@ -425,3 +592,14 @@ row where a role mutation went red, because heading is derived from a property, 
 `Role` (as textbox, list and grid are). Three components cost twenty minutes of wall clock from
 the honest gate to the commit, and again almost none of it in Kotlin. The Orca pass is still
 owed.
+
+Twelve components in (session 4): nothing new crossed, and that is the finding. Three group
+components brought three group roles (`radiogroup`, `toolbar`, `group`) and one input role
+(`searchbox`), and none of them has a Compose vocabulary or a `jb-main` role id, so the next
+release cannot flip those rows; the per-item roles and states fall as before. The Compose side
+kept being the easy part: thirty-four UI tests, two compile slips, no behaviour bug, roving focus
+and keyboard shortcuts included. The new information this session is on the keyboard side.
+Focus that enters the canvas does not leave it by Tab or Shift+Tab, measured with a sibling
+button to leave to; on 1.12.0 that is the shape of the web target, not a demo-page artefact.
+The Orca pass is still owed, and it now matters more: a screen reader user who tabs into this
+canvas hears buttons without state and then cannot tab out.

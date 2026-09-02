@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client'
 import {
   Button,
   Checkbox,
+  CheckboxGroup,
   Disclosure,
   DisclosurePanel,
   Heading,
@@ -17,18 +18,24 @@ import {
   ProgressBar,
   Radio,
   RadioGroup,
+  SearchField,
   Switch,
   TextField,
   ToggleButton,
+  ToggleButtonGroup,
 } from 'react-aria-components'
+import type { Key } from 'react-aria-components'
 
 const routes = [
   '/button',
   '/toggle-button',
+  '/toggle-button-group',
   '/checkbox',
+  '/checkbox-group',
   '/switch',
   '/radio-group',
   '/text-field',
+  '/search-field',
   '/link',
   '/progress-bar',
   '/disclosure',
@@ -86,6 +93,46 @@ function ToggleButtonDemo() {
   )
 }
 
+function ToggleButtonGroupDemo() {
+  const [alignment, setAlignment] = useState<Set<Key>>(new Set())
+  const [styles, setStyles] = useState<Set<Key>>(new Set())
+  return (
+    <>
+      <ToggleButtonGroup data-testid="align" aria-label="Text alignment" selectedKeys={alignment} onSelectionChange={setAlignment}>
+        <ToggleButton id="left" data-testid="tb-left">
+          Left
+        </ToggleButton>
+        <ToggleButton id="center" data-testid="tb-center">
+          Center
+        </ToggleButton>
+        <ToggleButton id="right" data-testid="tb-right">
+          Right
+        </ToggleButton>
+      </ToggleButtonGroup>
+      <ToggleButtonGroup
+        data-testid="style"
+        aria-label="Text style"
+        selectionMode="multiple"
+        selectedKeys={styles}
+        onSelectionChange={setStyles}
+      >
+        <ToggleButton id="bold" data-testid="tb-bold">
+          Bold
+        </ToggleButton>
+        <ToggleButton id="italic" data-testid="tb-italic">
+          Italic
+        </ToggleButton>
+        <ToggleButton id="underline" data-testid="tb-underline" isDisabled>
+          Underline
+        </ToggleButton>
+      </ToggleButtonGroup>
+      <p data-testid="state">
+        Alignment: {[...alignment].join(', ') || 'none'}; Style: {[...styles].join(', ') || 'none'}
+      </p>
+    </>
+  )
+}
+
 function CheckboxDemo() {
   const [selected, setSelected] = useState(false)
   return (
@@ -100,6 +147,27 @@ function CheckboxDemo() {
         Disabled
       </Checkbox>
       <p data-testid="state">{selected ? 'Selected' : 'Not selected'}</p>
+    </>
+  )
+}
+
+function CheckboxGroupDemo() {
+  const [interests, setInterests] = useState<string[]>([])
+  return (
+    <>
+      <CheckboxGroup data-testid="group" value={interests} onChange={setInterests}>
+        <Label>Interests</Label>
+        <Checkbox value="sports" data-testid="cb-sports">
+          Sports
+        </Checkbox>
+        <Checkbox value="music" data-testid="cb-music">
+          Music
+        </Checkbox>
+        <Checkbox value="reading" data-testid="cb-reading" isDisabled>
+          Reading
+        </Checkbox>
+      </CheckboxGroup>
+      <p data-testid="state">Selected: {interests.join(', ') || 'none'}</p>
     </>
   )
 }
@@ -151,6 +219,22 @@ function TextFieldDemo() {
         <Input data-testid="pw" />
       </TextField>
       <p data-testid="state">Value: {name}</p>
+    </>
+  )
+}
+
+function SearchFieldDemo() {
+  const [value, setValue] = useState('')
+  const [submitted, setSubmitted] = useState('')
+  return (
+    <>
+      <SearchField value={value} onChange={setValue} onSubmit={setSubmitted}>
+        <Label>Search</Label>
+        <Input data-testid="sf" />
+        {value !== '' && <Button data-testid="clear">✕</Button>}
+      </SearchField>
+      <p data-testid="state">Value: {value}</p>
+      <p data-testid="submitted">Submitted: {submitted}</p>
     </>
   )
 }
@@ -231,14 +315,20 @@ function App() {
       return <ButtonDemo />
     case '/toggle-button':
       return <ToggleButtonDemo />
+    case '/toggle-button-group':
+      return <ToggleButtonGroupDemo />
     case '/checkbox':
       return <CheckboxDemo />
+    case '/checkbox-group':
+      return <CheckboxGroupDemo />
     case '/switch':
       return <SwitchDemo />
     case '/radio-group':
       return <RadioGroupDemo />
     case '/text-field':
       return <TextFieldDemo />
+    case '/search-field':
+      return <SearchFieldDemo />
     case '/link':
       return <LinkDemo />
     case '/progress-bar':
